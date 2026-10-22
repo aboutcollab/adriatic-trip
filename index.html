@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dad &amp; Me on the Adriatic</title>
+<meta name="description" content="Five nights on the Bay of Kotor and in Dubrovnik, 21–26 May 2027. A guide and a set of choices for the two of us.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..600&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --chart:#DDE6E3;
+    --chart-2:#D2DEDA;
+    --ink:#102C36;
+    --ink-soft:#3B5A63;
+    --deep:#0A2129;
+    --verdigris:#35766B;
+    --brass:#B4852F;
+    --brass-lift:#D9A94A;
+    --stone:#C8BCA6;
+    --line:rgba(16,44,54,.16);
+    --line-firm:rgba(16,44,54,.34);
+    --measure:34rem;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--chart);color:var(--ink);
+    font-family:"EB Garamond",Georgia,serif;font-size:19px;line-height:1.62;
+    font-variant-numeric:lining-nums tabular-nums;
+  }
+  img{max-width:100%;display:block}
+  a{color:var(--verdigris);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.16em}
+  a:hover{color:var(--ink)}
+  :focus-visible{outline:2.5px solid var(--brass);outline-offset:3px}
+
+  .wrap{max-width:1140px;margin:0 auto;padding:0 28px}
+  .narrow{max-width:var(--measure)}
+
+  /* ── hero ───────────────────────────────── */
+  .hero{position:relative;background:var(--deep);color:#EAF1EE;overflow:hidden}
+  .hero img{
+    width:100%;height:clamp(320px,56vh,560px);object-fit:cover;
+    opacity:.5;filter:saturate(.82)
+  }
+  .hero-text{
+    position:absolute;inset:auto 0 0 0;padding:0 28px 46px;
+  }
+  .hero-inner{max-width:1140px;margin:0 auto}
+  .hero h1{
+    font-size:clamp(2.8rem,8vw,6rem);line-height:.94;margin:0;font-weight:500;
+    letter-spacing:-.015em;text-wrap:balance;
+  }
+  .hero h1 em{font-style:italic;font-weight:400}
+  .hero .dates{
+    margin:.7rem 0 0;font-family:Karla,system-ui,sans-serif;font-size:.84rem;
+    letter-spacing:.1em;color:#A9C3BC;font-weight:500
+  }
+  .hero .sub{margin:.5rem 0 0;font-size:1.22rem;color:#CFE0DB;max-width:30rem}
+  .rhumb{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .rhumb path{
+    fill:none;stroke:var(--brass-lift);stroke-width:1.4;opacity:.65;
+    stroke-dasharray:5 7;
+    stroke-dashoffset:1400;animation:sail 3.4s .3s ease-out forwards
+  }
+  @keyframes sail{to{stroke-dashoffset:0}}
+  @media (prefers-reduced-motion:reduce){.rhumb path{animation:none;stroke-dashoffset:0}}
+
+  /* ── sections ───────────────────────────── */
+  section{padding:76px 0}
+  section.deep{background:var(--deep);color:#DCE8E4}
+  section.deep h2,section.deep h3{color:#F0F6F3}
+  section.deep a{color:var(--brass-lift)}
+  section.deep a:hover{color:#fff}
+  .shade{background:var(--chart-2)}
+
+  h2{
+    font-size:clamp(1.9rem,4.2vw,2.9rem);line-height:1.1;font-weight:500;
+    margin:0 0 .35em;letter-spacing:-.01em
+  }
+  h3{font-size:1.45rem;font-weight:600;margin:0 0 .3em;line-height:1.22}
+  .lede{font-size:1.2rem;color:var(--ink-soft);max-width:var(--measure)}
+  section.deep .lede{color:#A9C3BC}
+  p{max-width:var(--measure)}
+
+  /* ── the letter ─────────────────────────── */
+  .letter{
+    max-width:40rem;margin:0 auto;padding:40px 0 0;
+    font-size:1.2rem;line-height:1.78
+  }
+  .letter p:first-child{font-size:1.5rem;line-height:1.4;margin-top:0}
+  .letter p:first-child::first-letter{
+    float:left;font-size:3.4em;line-height:.76;padding:.06em .1em 0 0;
+    color:var(--verdigris);font-weight:500
+  }
+  .sign{font-style:italic;font-size:1.3rem;color:var(--verdigris)}
+
+  /* ── route line ─────────────────────────── */
+  .route{margin-top:34px;overflow-x:auto;padding-bottom:10px}
+  .route svg{min-width:860px;width:100%;height:auto}
+  .route text{font-family:"EB Garamond",serif}
+  .rt-place{font-size:15px;fill:#F0F6F3}
+  .rt-meta{font-family:Karla,sans-serif;font-size:10.5px;letter-spacing:.07em;fill:#8FAEA7}
+  .rt-day{font-family:Karla,sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;fill:var(--brass-lift)}
+
+  /* ── day spreads ────────────────────────── */
+  .day{
+    display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:stretch;
+    border-top:1px solid var(--line)
+  }
+  .day:last-of-type{border-bottom:1px solid var(--line)}
+  .day > figure{margin:0;position:relative;min-height:300px;background:var(--chart-2)}
+  .day > figure img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+  .day-body{padding:52px 48px 56px}
+  .day:nth-child(even) > figure{order:2}
+  @media (max-width:860px){
+    .day{grid-template-columns:1fr}
+    .day > figure{order:-1 !important;min-height:210px}
+    .day-body{padding:36px 0 44px}
+  }
+  .daymark{
+    display:flex;align-items:baseline;gap:.7rem;margin-bottom:.5rem;
+    font-family:Karla,sans-serif
+  }
+  .daymark .n{
+    font-size:.72rem;font-weight:700;letter-spacing:.16em;color:var(--brass);
+    border:1px solid var(--brass);border-radius:50%;
+    width:2.1rem;height:2.1rem;display:grid;place-items:center;flex:none
+  }
+  .daymark .when{font-size:.84rem;letter-spacing:.09em;color:var(--ink-soft)}
+  .beat{display:flex;gap:.85rem;margin:.55rem 0;max-width:var(--measure)}
+  .beat .t{
+    font-family:Karla,sans-serif;font-size:.78rem;font-weight:700;color:var(--brass);
+    flex:none;width:3.6rem;padding-top:.3rem;letter-spacing:.03em
+  }
+  .beat p{margin:0}
+
+  /* fun fact — a note pencilled in the log margin */
+  .note{
+    margin:1.6rem 0 0;max-width:var(--measure);padding:.1rem 0 .1rem 1.1rem;
+    border-left:2px solid var(--stone);font-style:italic;color:var(--ink-soft);
+    font-size:1.05rem
+  }
+  .note b{font-style:normal;font-weight:600;color:var(--ink)}
+
+  /* ── choices ────────────────────────────── */
+  .choice{
+    margin:2rem 0 0;border:1.5px solid var(--brass);background:rgba(180,133,47,.07);
+    padding:22px 22px 18px;max-width:38rem
+  }
+  section.deep .choice{background:rgba(217,169,74,.09)}
+  .choice > h4{
+    margin:0 0 .15rem;font-size:1.18rem;font-weight:600;
+    display:flex;gap:.6rem;align-items:center
+  }
+  .choice > h4 svg{flex:none}
+  .choice .why{margin:0 0 .9rem;font-size:1.02rem;color:var(--ink-soft);max-width:none}
+  section.deep .choice .why{color:#A9C3BC}
+  .opts{display:grid;gap:9px}
+  .opt{
+    display:block;width:100%;text-align:left;cursor:pointer;
+    font-family:inherit;font-size:1rem;color:inherit;
+    background:rgba(255,255,255,.55);border:1px solid var(--line-firm);
+    padding:11px 13px;transition:border-color .13s,background .13s
+  }
+  section.deep .opt{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22)}
+  .opt:hover{border-color:var(--brass)}
+  .opt strong{display:block;font-weight:600;font-size:1.06rem}
+  .opt span{display:block;color:var(--ink-soft);font-size:.96rem;line-height:1.45}
+  section.deep .opt span{color:#9FBAB3}
+  .opt[aria-pressed="true"]{
+    background:var(--brass);border-color:var(--brass);color:#1A1203
+  }
+  .opt[aria-pressed="true"] span{color:#4A3408}
+  .opt-tag{
+    float:right;font-family:Karla,sans-serif;font-size:.7rem;font-weight:700;
+    letter-spacing:.09em;opacity:0;margin-left:.6rem
+  }
+  .opt[aria-pressed="true"] .opt-tag{opacity:1}
+
+  /* ── tables ─────────────────────────────── */
+  table{border-collapse:collapse;width:100%;font-size:1rem;margin-top:1.2rem}
+  caption{text-align:left;font-size:1rem;color:var(--ink-soft);padding-bottom:.6rem}
+  section.deep caption{color:#A9C3BC}
+  th,td{text-align:left;padding:.62rem .8rem .62rem 0;border-bottom:1px solid var(--line);vertical-align:top}
+  section.deep th,section.deep td{border-bottom-color:rgba(255,255,255,.14)}
+  th{font-family:Karla,sans-serif;font-size:.74rem;font-weight:700;letter-spacing:.1em;color:var(--ink-soft)}
+  section.deep th{color:#8FAEA7}
+  .wide-scroll{overflow-x:auto}
+  .wide-scroll table{min-width:580px}
+
+  /* ── grids ──────────────────────────────── */
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(265px,1fr));gap:34px 44px;margin-top:30px}
+  .cols h3{font-size:1.2rem}
+  .cols p{max-width:none;font-size:1.04rem;margin:.2rem 0 0}
+  .books{display:grid;gap:26px;margin-top:28px;max-width:44rem}
+  .book{display:grid;grid-template-columns:3.2rem 1fr;gap:1rem;align-items:start}
+  .book .yr{font-family:Karla,sans-serif;font-size:.78rem;font-weight:700;color:var(--brass);padding-top:.42rem}
+  .book p{margin:.15rem 0 0;font-size:1.04rem;max-width:none}
+
+  /* ── the tally bar ──────────────────────── */
+  .tally{
+    position:fixed;left:0;right:0;bottom:0;z-index:40;
+    background:var(--deep);color:#EAF1EE;border-top:1.5px solid var(--brass);
+    font-family:Karla,sans-serif;font-size:.88rem;
+    transform:translateY(102%);transition:transform .22s ease
+  }
+  .tally.on{transform:none}
+  .tally-in{
+    max-width:1140px;margin:0 auto;padding:11px 28px;
+    display:flex;gap:16px;align-items:center;flex-wrap:wrap
+  }
+  .tally b{color:var(--brass-lift)}
+  .tally .grow{flex:1 1 auto}
+  .btn{
+    font-family:Karla,sans-serif;font-size:.84rem;font-weight:700;letter-spacing:.04em;
+    padding:8px 15px;border:1.5px solid var(--brass);background:transparent;
+    color:var(--brass-lift);cursor:pointer
+  }
+  .btn:hover{background:var(--brass);color:#1A1203}
+  .btn.solid{background:var(--brass);color:#1A1203}
+  .btn.solid:hover{background:var(--brass-lift)}
+  .btn.ghost{border-color:rgba(255,255,255,.3);color:#BFD3CE}
+  .btn.ghost:hover{background:rgba(255,255,255,.1);color:#fff}
+
+  /* ── who panel ──────────────────────────── */
+  .who{
+    display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:1.4rem;
+    font-family:Karla,sans-serif;font-size:.92rem
+  }
+  .summary-list{margin:1.2rem 0 0;padding:0;list-style:none;max-width:40rem}
+  .summary-list li{
+    padding:.55rem 0;border-bottom:1px solid var(--line);
+    display:flex;gap:1rem;justify-content:space-between;font-size:1.04rem
+  }
+  section.deep .summary-list li{border-bottom-color:rgba(255,255,255,.14)}
+  .summary-list .q{color:var(--ink-soft)}
+  section.deep .summary-list .q{color:#A9C3BC}
+  .summary-list .a{text-align:right;font-weight:600}
+  .summary-list .a.none{font-weight:400;font-style:italic;opacity:.6}
+
+  /* ── footer ─────────────────────────────── */
+  footer{
+    background:var(--deep);color:#8FAEA7;padding:54px 0 108px;
+    font-family:Karla,sans-serif;font-size:.84rem;line-height:1.7
+  }
+  footer h3{font-family:"EB Garamond",serif;color:#DCE8E4;font-size:1.3rem;margin-bottom:.6rem}
+  footer a{color:#A9C3BC}
+  footer a:hover{color:#fff}
+  .credits{columns:2;column-gap:40px;max-width:52rem;margin-top:1rem;font-size:.78rem}
+  @media (max-width:620px){.credits{columns:1}}
+  .seal{
+    margin-top:34px;padding-top:22px;border-top:1px solid rgba(255,255,255,.14);
+    max-width:40rem
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <img src="img/perast-aerial.jpg" alt="Perast seen from above: a strip of stone houses on the Bay of Kotor with two small island churches offshore" width="1500" height="564">
+  <svg class="rhumb" viewBox="0 0 1200 500" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M -20 392 C 180 360, 300 300, 470 318 S 760 372, 900 300 S 1120 196, 1240 212"/>
+  </svg>
+  <div class="hero-text"><div class="hero-inner">
+    <h1>Dad &amp; Me<br>on the <em>Adriatic</em></h1>
+    <p class="dates">21 – 26 MAY 2027 · MONTENEGRO &amp; CROATIA</p>
+    <p class="sub">Five nights, two countries, one wedding and one birthday.</p>
+  </div></div>
+</header>
+
+<!-- ───────────── the letter ───────────── -->
+<section>
+  <div class="wrap">
+    <div class="letter">
+      <p>Pai, here is the trip. Not a brochure — the actual plan, with the parts we still get to decide together left open for you.</p>
+      <p>We land on the Bay of Kotor on the Friday, a deep green bay with grey mountains falling straight into it. Saturday belongs to the wedding. Sunday is my birthday, and I want to spend it in Perast, which is one street of stone palaces facing two tiny island churches. Then we cross into Croatia and finish in Dubrovnik — a city you have never seen, and the one place I have been without you that I have most wanted to take you to.</p>
+      <p>Everything here is about 90 minutes from everything else. We will not need a car and we will not rush. Scroll through, read the bits that interest you, and wherever you see a <b>gold box</b>, tap the option you prefer. I will see what you chose and we decide on the phone.</p>
+      <p class="sign">— Helena</p>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── the route ───────────── -->
+<section class="deep">
+  <div class="wrap">
+    <h2>The shape of it</h2>
+    <p class="lede">Into Montenegro, down the bay, over the border once, out of Croatia. Flying home from a different airport than we arrive at is what keeps it to a single crossing.</p>
+
+    <div class="route">
+      <svg viewBox="0 0 980 190" role="img" aria-label="The route: fly into Tivat, two nights on the wedding coast, one night in Perast, early morning in Kotor, cross the border, two nights in Dubrovnik, fly home.">
+        <line x1="40" y1="96" x2="940" y2="96" stroke="#2C4C55" stroke-width="1.5"/>
+        <line x1="40" y1="96" x2="940" y2="96" stroke="#D9A94A" stroke-width="1.5" stroke-dasharray="4 6" opacity=".8"/>
+
+        <!-- border gate -->
+        <g>
+          <line x1="648" y1="58" x2="648" y2="134" stroke="#D9A94A" stroke-width="1.2" stroke-dasharray="3 4"/>
+          <text class="rt-meta" x="648" y="50" text-anchor="middle">THE BORDER · 45 MIN – 2 HRS</text>
+        </g>
+
+        <!-- nodes -->
+        <g>
+          <circle cx="40"  cy="96" r="5.5" fill="#D9A94A"/>
+          <text class="rt-place" x="40" y="124" text-anchor="start">Tivat airport</text>
+          <text class="rt-meta"  x="40" y="142" text-anchor="start">LAND · FRI</text>
+        </g>
+        <g>
+          <circle cx="212" cy="96" r="5.5" fill="#EAF1EE"/>
+          <text class="rt-place" x="212" y="124" text-anchor="middle">The wedding coast</text>
+          <text class="rt-day"   x="212" y="80"  text-anchor="middle">NIGHTS 1–2</text>
+          <text class="rt-meta"  x="212" y="142" text-anchor="middle">HOSTED</text>
+        </g>
+        <g>
+          <circle cx="412" cy="96" r="5.5" fill="#EAF1EE"/>
+          <text class="rt-place" x="412" y="124" text-anchor="middle">Perast</text>
+          <text class="rt-day"   x="412" y="80"  text-anchor="middle">NIGHT 3 · BIRTHDAY</text>
+          <text class="rt-meta"  x="412" y="142" text-anchor="middle">40 MIN BY FERRY SHORTCUT</text>
+        </g>
+        <g>
+          <circle cx="560" cy="96" r="4" fill="none" stroke="#8FAEA7" stroke-width="1.5"/>
+          <text class="rt-place" x="560" y="124" text-anchor="middle">Kotor</text>
+          <text class="rt-meta"  x="560" y="142" text-anchor="middle">7:30 AM, NO CROWDS</text>
+        </g>
+        <g>
+          <circle cx="800" cy="96" r="5.5" fill="#EAF1EE"/>
+          <text class="rt-place" x="800" y="124" text-anchor="middle">Dubrovnik</text>
+          <text class="rt-day"   x="800" y="80"  text-anchor="middle">NIGHTS 4–5</text>
+          <text class="rt-meta"  x="800" y="142" text-anchor="middle">1 HR 45 FROM PERAST</text>
+        </g>
+        <g>
+          <circle cx="940" cy="96" r="5.5" fill="#D9A94A"/>
+          <text class="rt-place" x="940" y="124" text-anchor="end">Fly home</text>
+          <text class="rt-meta"  x="940" y="142" text-anchor="end">WED</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="choice">
+      <h4>How long do we make it?</h4>
+      <p class="why">Five nights is the full version. Four still works, because Dubrovnik's best hours are the evening and the early morning anyway — the middle of the day is when the cruise ships own it.</p>
+      <div class="opts" data-q="Trip length">
+        <button class="opt" data-a="5 nights — the full version"><strong>Five nights <span class="opt-tag">PICKED</span></strong><span>Fri 21 – Wed 26 May. Two at the wedding, one in Perast, two in Dubrovnik.</span></button>
+        <button class="opt" data-a="4 nights — home Tuesday"><strong>Four nights <span class="opt-tag">PICKED</span></strong><span>Home Tuesday afternoon. We keep one Dubrovnik evening and one early morning.</span></button>
+        <button class="opt" data-a="Mountain swap — two nights in Perast"><strong>The mountain swap <span class="opt-tag">PICKED</span></strong><span>Two nights in Perast, Monday up on Lovćen at 1,650 m, then one night in Dubrovnik.</span></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── getting there ───────────── -->
+<section class="shade">
+  <div class="wrap">
+    <h2>Getting there</h2>
+    <p class="lede">I checked the real schedules for our two dates on 22 October 2026. Prices are per person, one way, and they will move — the flights themselves are the part worth knowing.</p>
+
+    <div class="cols">
+      <div>
+        <h3>There is no direct Amsterdam–Tivat on a Friday</h3>
+        <p>Only TUI flies Amsterdam to Tivat non-stop, and only on Wednesdays and Sundays. easyJet has announced the route, but it does not start until 29 June 2027 — five weeks after we go. So reaching Montenegro from Amsterdam on a Friday means either a connection through Belgrade, or flying into Dubrovnik and driving down.</p>
+      </div>
+      <div>
+        <h3>Dad's side</h3>
+        <p>From Belo Horizonte the sensible shape is a single European hub — Lisbon, Frankfurt, Paris or Istanbul — and then one short flight to Dubrovnik or Tivat. Worth looking at arriving a day early and sleeping near the airport, rather than landing straight into a wedding weekend.</p>
+      </div>
+    </div>
+
+    <div class="choice">
+      <h4>Friday out — which way in?</h4>
+      <p class="why">Both land mid-afternoon, with enough of the day left for dinner by the water. The real difference is whether we cross the border on the Friday or save it for Monday.</p>
+      <div class="opts" data-q="Flight out, Fri 21 May">
+        <button class="opt" data-a="Air Serbia via Belgrade to Tivat, 10:00–14:35, ~€176"><strong>Amsterdam → Tivat, via Belgrade <span class="opt-tag">PICKED</span></strong><span>Air Serbia, 10:00 – 14:35, one stop of 1h15. About €176. Lands inside Montenegro, so no border on arrival and 15 minutes to the bay.</span></button>
+        <button class="opt" data-a="KLM non-stop to Dubrovnik, 09:35–12:05, ~€259"><strong>Amsterdam → Dubrovnik, non-stop <span class="opt-tag">PICKED</span></strong><span>KLM, 09:35 – 12:05, 2h30 in the air. About €259. Then a two-hour drive and the border, arriving around 15:00.</span></button>
+      </div>
+    </div>
+
+    <div class="choice">
+      <h4>Wednesday home — how much of the last day do we keep?</h4>
+      <p class="why">This one is yours as much as mine. The late flight buys a whole extra Dubrovnik afternoon and costs us a midnight arrival.</p>
+      <div class="opts" data-q="Flight home, Wed 26 May">
+        <button class="opt" data-a="Lufthansa via Munich, 17:05–21:55 — a full last day"><strong>Leave at 17:05, home 21:55 <span class="opt-tag">PICKED</span></strong><span>Lufthansa via Munich, about €192. A full last morning and lunch in the old town.</span></button>
+        <button class="opt" data-a="KLM non-stop, 12:45–15:10 — easy, early home"><strong>Leave at 12:45, home 15:10 <span class="opt-tag">PICKED</span></strong><span>KLM non-stop, about €236. Coffee on the Stradun and go. The gentlest travel day.</span></button>
+      </div>
+    </div>
+
+    <p class="note" style="margin-top:2rem"><b>Why it matters which airport.</b> Croatia is in Schengen, Montenegro is not, so there is passport control in both directions. In late May the crossing at Debeli Brijeg runs 45 minutes to two hours on a weekday, and much longer at weekends — which is exactly why we cross on a Monday morning, and only once.</p>
+  </div>
+</section>
+
+<!-- ───────────── day by day ───────────── -->
+<section>
+  <div class="wrap narrow" style="max-width:var(--measure)">
+    <h2>Five days, hour by hour</h2>
+    <p class="lede">The cruise ships are the one thing both Kotor and Dubrovnik have in common: day visitors fill the old towns from about 10am to 4pm. Everything below is arranged around being somewhere else at those hours.</p>
+  </div>
+</section>
+
+<div class="wrap" style="padding-bottom:10px">
+<div class="day">
+  <figure><img src="img/porto-montenegro.jpg" alt="Yachts and palm trees along the waterfront promenade at Porto Montenegro in Tivat" loading="lazy"></figure>
+  <div class="day-body">
+    <div class="daymark"><span class="n">1</span><span class="when">FRIDAY 21 MAY · ARRIVE</span></div>
+    <h3>Land on the bay</h3>
+    <div class="beat"><span class="t">PM</span><p>Land, meet, and go nowhere in particular. Dinner by the water and an early night, because Saturday is a wedding.</p></div>
+    <div class="beat"><span class="t">EVE</span><p>If we are anywhere near Tivat, the promenade at <a href="https://www.portomontenegro.com/">Porto Montenegro</a> is a gentle first walk — flat, lit, and about twenty minutes end to end.</p></div>
+    <p class="note"><b>What you are walking on.</b> This marina was a naval base: first Austro-Hungarian, then Yugoslav. The submarine pens are still cut into the hillside nearby. The yachts arrived in the 2000s.</p>
+  </div>
+</div>
+
+<div class="day">
+  <figure><img src="img/bay-of-kotor.jpg" alt="The Bay of Kotor: steep grey mountains dropping into deep green water" loading="lazy"></figure>
+  <div class="day-body">
+    <div class="daymark"><span class="n">2</span><span class="when">SATURDAY 22 MAY · THE WEDDING</span></div>
+    <h3>The day belongs to them</h3>
+    <div class="beat"><span class="t">AM</span><p>Sleep in. Swim if you are brave — the sea is about 18 °C in late May, which is colder than it looks.</p></div>
+    <div class="beat"><span class="t">PM</span><p>The wedding, and then dancing. Nothing else is planned, deliberately.</p></div>
+    <p class="note"><b>Not a fjord.</b> Everyone calls this Europe's southernmost fjord. It isn't one — a fjord is carved by ice, and this is a river canyon that the sea flooded. The correct word is a ria, and it is why the water goes down so steeply so close to shore.</p>
+  </div>
+</div>
+
+<div class="day">
+  <figure><img src="img/our-lady.jpg" alt="The church of Our Lady of the Rocks on its small man-made island, with the mountains of the bay behind" loading="lazy"></figure>
+  <div class="day-body">
+    <div class="daymark"><span class="n">3</span><span class="when">SUNDAY 23 MAY · MY BIRTHDAY</span></div>
+    <h3>Perast, and the island the sailors built</h3>
+    <div class="beat"><span class="t">11:00</span><p>Late breakfast, then over to Perast. From the Tivat side the <a href="https://www.google.com/maps/place/Kamenari+ferry">Kamenari–Lepetane ferry</a> cuts the drive to about forty minutes — ten of them on the water.</p></div>
+    <div class="beat"><span class="t">15:00</span><p>A small boat out to <a href="https://en.wikipedia.org/wiki/Our_Lady_of_the_Rocks">Our Lady of the Rocks</a>. Better: hire a private boat for an hour and go slowly round the bay instead of in a queue.</p></div>
+    <div class="beat"><span class="t">19:30</span><p>Golden hour on the waterfront with a glass of local wine. The whole village is one street long, so nothing is more than four minutes away.</p></div>
+    <div class="beat"><span class="t">21:00</span><p>Birthday dinner — booked months ahead, because Perast is tiny.</p></div>
+    <p class="note"><b>The island is handmade.</b> Sailors built it, stone by stone, around a rock where an icon was found in 1452 — dropping rocks and eventually scuttling captured ships on the spot. They still do it: every 22 July the village rows out at sunset and throws more stones in. Inside the church hangs a tapestry a woman named Jacinta embroidered over twenty-five years while waiting for her sailor to come home, using gold thread and her own hair. He did not come back.</p>
+
+    <div class="choice">
+      <h4>Where do I wake up on my birthday?</h4>
+      <p class="why">Perast puts us on the water with dinner two minutes away. Huma is fifteen minutes off, more hotel than village, with pools facing the bay. I genuinely don't mind — so you pick.</p>
+      <div class="opts" data-q="Birthday night bed">
+        <button class="opt" data-a="Perast waterfront — Heritage Grand or Hotel Conte"><strong>On the Perast waterfront <span class="opt-tag">PICKED</span></strong><span>Heritage Grand Perast or <a href="https://adriacom.me/?p=55334">Hotel Conte</a>. Stone rooms, church bells, dinner downstairs.</span></button>
+        <button class="opt" data-a="Huma Kotor Bay, Dobrota — the splurge"><strong>Huma Kotor Bay, the splurge <span class="opt-tag">PICKED</span></strong><span>Dobrota, near Kotor. Infinity pools over the water, fifteen minutes from Perast.</span></button>
+      </div>
+    </div>
+
+    <div class="choice">
+      <h4>And the birthday dinner?</h4>
+      <p class="why">All three are on or near the water. One is a chef's restaurant, one is a family's, one is a four-hundred-year-old mill in the next bay along.</p>
+      <div class="opts" data-q="Birthday dinner">
+        <button class="opt" data-a="Trattoria Rosmarino, Perast"><strong>Trattoria Rosmarino <span class="opt-tag">PICKED</span></strong><span>Refined seafood by chef Nikola Čelić, in the <a href="https://jre.eu/en/destination-bay-of-kotor-montenegro">JRE young-chefs association</a>.</span></button>
+        <button class="opt" data-a="Restaurant Conte, Perast"><strong>Restaurant Conte <span class="opt-tag">PICKED</span></strong><span>Family-run, tables right on the stone quay, straightforwardly Mediterranean.</span></button>
+        <button class="opt" data-a="Konoba Ćatovića Mlini, Morinj"><strong>Konoba Ćatovića Mlini <span class="opt-tag">PICKED</span></strong><span>A converted mill in Morinj, a few minutes away, with streams running through the garden. Rated among the best tables in the country.</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="day">
+  <figure><img src="img/kotor-oldtown.jpg" alt="A stone square in Kotor's walled old town, early and almost empty" loading="lazy"></figure>
+  <div class="day-body">
+    <div class="daymark"><span class="n">4</span><span class="when">MONDAY 24 MAY · CROSS OVER</span></div>
+    <h3>Kotor at dawn, Dubrovnik by lunch</h3>
+    <div class="beat"><span class="t">07:30</span><p><a href="https://whc.unesco.org/en/list/125/">Kotor's old town</a> before the ships: in through the Sea Gate, the 12th-century cathedral of St Tryphon, coffee on a square with nobody on it.</p></div>
+    <div class="beat"><span class="t">09:30</span><p>A private driver round the bay. Coffee in <a href="https://en.wikipedia.org/wiki/Herceg_Novi">Herceg Novi</a>, where Ivo Andrić spent what he called his happiest years — his house there is a small museum, and he is the first of the three books below.</p></div>
+    <div class="beat"><span class="t">11:30</span><p>The border. Monday morning is the gentlest slot of the week.</p></div>
+    <div class="beat"><span class="t">14:00</span><p>Check in, lie down, ice cream. We have earned a flat hour.</p></div>
+    <div class="beat"><span class="t">17:00</span><p>The <a href="https://citywallsdubrovnik.hr/">city walls</a> as the crowds thin and the stone turns gold. Two kilometres, one to two hours, about 1,190 steps, last entry 6pm in May.</p></div>
+    <div class="beat"><span class="t">20:30</span><p>Dinner. Either <a href="https://www.360dubrovnik.com/">Restaurant 360</a>, which has a Michelin star and sits inside the walls above the old harbour, or something small and unbothered in a side street.</p></div>
+    <p class="note"><b>Kotor runs on cats.</b> They are everywhere, they are fed by everyone, and there is a small museum devoted to them. The story goes that they came off the ships and were kept for the same reason ships kept them.</p>
+  </div>
+</div>
+
+<div class="day">
+  <figure><img src="img/dubrovnik-walls.jpg" alt="Dubrovnik's medieval walls above terracotta roofs and the sea" loading="lazy"></figure>
+  <div class="day-body">
+    <div class="daymark"><span class="n">5</span><span class="when">TUESDAY 25 MAY · OUR WAY</span></div>
+    <h3>One free day, three ways to spend it</h3>
+    <div class="beat"><span class="t">EVE</span><p>However the day goes, the farewell dinner is at <a href="https://www.nautikarestaurant.com/">Nautika</a> — the old maritime school by the Pile Gate, with Fort Lovrijenac across the water.</p></div>
+    <p class="note"><b>A republic that ran on paperwork.</b> Ragusa — Dubrovnik's own name for itself for six hundred years — kept its independence by being useful to everyone and threatening to no one. It set up one of the first formal quarantines in Europe in 1377: thirty days on an island before you were allowed in, later forty, which is where the word comes from. It banned the slave trade in 1416. Above the gate of Fort Lovrijenac is still carved: <i>freedom is not to be sold for all the gold in the world</i>.</p>
+
+    <div class="choice">
+      <h4>Tuesday is yours. Which one?</h4>
+      <p class="why">One is a day out with oysters, one is an island you can swim off, one is doing almost nothing in a very beautiful place.</p>
+      <div class="opts" data-q="Tuesday 25 May">
+        <button class="opt" data-a="Ston and Mali Ston — walls and oysters"><strong>Ston, for the walls and the oysters <span class="opt-tag">PICKED</span></strong><span>An hour north. Five kilometres of medieval wall built to guard the salt pans — Ragusa's actual source of money — then oysters pulled out of Mali Ston bay, farmed there since Roman times. About five hours.</span></button>
+        <button class="opt" data-a="Lokrum island — gardens and swimming"><strong>Lokrum island <span class="opt-tag">PICKED</span></strong><span>Fifteen minutes by boat from the old harbour. Botanical gardens planted by a Habsburg archduke, his peacocks still running loose, and swimming off the rocks.</span></button>
+        <button class="opt" data-a="A slow city day — museums and the cable car"><strong>A slow city day <span class="opt-tag">PICKED</span></strong><span>The Rector's Palace and the museums in the morning, then the <a href="https://www.dubrovnikcablecar.com/">cable car</a> up Mount Srđ for sunset over the islands.</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="day">
+  <figure><img src="img/stradun.jpg" alt="The Stradun, Dubrovnik's polished limestone main street, between uniform stone facades" loading="lazy"></figure>
+  <div class="day-body">
+    <div class="daymark"><span class="n">6</span><span class="when">WEDNESDAY 26 MAY · HOME</span></div>
+    <h3>One last empty street</h3>
+    <div class="beat"><span class="t">07:30</span><p>Coffee on the <a href="https://en.wikipedia.org/wiki/Stradun">Stradun</a> before the day-trippers land. At that hour the limestone is still wet from being washed and the whole street is a mirror.</p></div>
+    <div class="beat"><span class="t">09:00</span><p>A last look at Fort Lovrijenac — the walls ticket already covers it — and then the airport.</p></div>
+    <p class="note"><b>Why every facade matches.</b> An earthquake flattened Dubrovnik in 1667. What went back up was built to a single set of rules: same height, same stone, same green shutters. The Stradun is one of the earliest streets in Europe to be rebuilt to a building code.</p>
+  </div>
+</div>
+</div>
+
+<!-- ───────────── the mountain option ───────────── -->
+<section class="deep">
+  <div class="wrap">
+    <h2>If we take the mountains instead</h2>
+    <div class="cols">
+      <div>
+        <img src="img/njegos.jpg" alt="The Njegoš mausoleum on the summit ridge of Lovćen, above cloud" loading="lazy" style="margin-bottom:1rem">
+        <h3>Twenty-five hairpins and a poet on a summit</h3>
+        <p>The old road out of Kotor climbs twenty-five numbered hairpin bends to Njeguši — a village known for smoked ham and mountain cheese, and as the birthplace of Njegoš — and then into <a href="https://www.nparkovi.me/en/lovcen">Lovćen National Park</a>. At 1,657 m, at the top of 461 steps, is his mausoleum: granite caryatids, a vast view over the bay on one side and the mountains on the other. He was a prince-bishop, a poet, and by all accounts about 1.9 m tall.</p>
+        <p>Down the far side is <a href="https://en.wikipedia.org/wiki/Cetinje">Cetinje</a>, the old royal capital — a town of a few thousand people that once had the embassies of Russia, Britain, France and Austria-Hungary on one street. The buildings are still there.</p>
+        <p class="note" style="border-left-color:#4A6A72;color:#A9C3BC">In cloud there is no view at all, and it is a long staircase. If we do this, we keep both Monday and Tuesday open and go up on whichever morning is clearer.</p>
+      </div>
+      <div>
+        <img src="img/cetinje.jpg" alt="A former embassy building in Cetinje, Montenegro's old royal capital" loading="lazy" style="margin-bottom:1rem">
+        <h3>What it costs us</h3>
+        <p>Two nights in Perast instead of one, a seven-hour day in the mountains, and Dubrovnik cut to a single night — one evening on the walls and one morning on the Stradun. It is the right trade if the mountains interest you more than the city does.</p>
+        <h3 style="margin-top:1.6rem">What we are leaving for another time</h3>
+        <p>Durmitor and the Tara canyon, Lake Skadar, and the monastery at Ostrog built into a cliff face. All of them are extraordinary and all of them need days we do not have this time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── our choices ───────────── -->
+<section class="shade" id="choices">
+  <div class="wrap">
+    <h2>What we have chosen</h2>
+    <p class="lede">Tap the options you like anywhere on this page and they collect here. Say who you are first, then send me your picks when you have been through it.</p>
+
+    <div class="who">
+      <span>I am</span>
+      <button class="btn" data-who="Helena">Helena</button>
+      <button class="btn" data-who="Pai">Pai</button>
+      <span id="who-now" style="color:var(--ink-soft)"></span>
+    </div>
+
+    <ul class="summary-list" id="summary"></ul>
+
+    <div class="who" style="margin-top:1.8rem">
+      <button class="btn solid" id="send">Send my picks on WhatsApp</button>
+      <button class="btn" id="copy">Copy them instead</button>
+      <button class="btn ghost" id="reset" style="border-color:var(--line-firm);color:var(--ink-soft)">Start over</button>
+      <span id="said" style="color:var(--verdigris)"></span>
+    </div>
+    <p class="note" style="margin-top:1.6rem"><b>How this works.</b> Your picks are kept in your own browser on your own phone — nothing is sent anywhere until you press send, and nobody else can see them. There is no account and nothing to log in to.</p>
+  </div>
+</section>
+
+<!-- ───────────── practical ───────────── -->
+<section>
+  <div class="wrap">
+    <h2>The practical half</h2>
+    <div class="cols">
+      <div>
+        <h3>Your passport, specifically</h3>
+        <p>A Brazilian passport needs no visa for a short stay in either country, but it has to be less than ten years old and still valid for three months after 26 May 2027. Worth checking the date this week rather than in April.</p>
+        <p>Entering Croatia you will be registered under the EU's new <a href="https://travel-europe.europa.eu/ees_en">EES</a> system — passport, four fingerprints and a photo, done at the booth. They no longer stamp passports. ETIAS, the €20 online permit, was still not running as of October 2026 and is expected some time in 2027 with a six-month grace period. I will check <a href="https://travel-europe.europa.eu/en/etias">the official site</a> in January and tell you if anything is needed.</p>
+      </div>
+      <div>
+        <h3>Late May weather</h3>
+        <p>Around 23 °C in the day, 15 °C at night, sea about 18–19 °C. Green, not yet hot, and showers are possible — a little more often inside the bay, where the mountains catch the cloud.</p>
+        <h3 style="margin-top:1.5rem">Money</h3>
+        <p>Both countries use the euro, which makes this simpler than it has any right to be. Cards work nearly everywhere, and the Dubrovnik walls are card-only.</p>
+      </div>
+      <div>
+        <h3>What to bring</h3>
+        <p>Shoes with grip above everything else — polished limestone is genuinely slippery, and the walls alone are 1,190 steps. A light jacket for evenings on the water. A hat: there is no shade at all up on the walls. Swimsuit, in case you are brave. The wedding outfit. A contactless card.</p>
+        <p>Not a rolling suitcase, if we end up sleeping inside Dubrovnik's walls — the old town is stepped, car-free, and wheels on that stone are discouraged.</p>
+      </div>
+    </div>
+
+    <div class="wide-scroll">
+      <table>
+        <caption>Where we sleep, and what is still open</caption>
+        <thead><tr><th>Nights</th><th>Where</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Fri 21 – Sat 22</td><td>The wedding coast</td><td>Hosted — thank you, bride</td></tr>
+          <tr><td>Sun 23</td><td>Perast or Dobrota</td><td>Your choice above. Book first, it is the scarcest night of the trip</td></tr>
+          <tr><td>Mon 24 – Tue 25</td><td>Dubrovnik: inside the walls, or Ploče just east of them</td><td>Inside is magical at night and full of steps; Ploče has the view back at the old town and easy taxis</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── books ───────────── -->
+<section class="shade">
+  <div class="wrap">
+    <h2>Three books, if you want a head start</h2>
+    <p class="lede">All in English, all available in Brazil, and all about this exact coast. The first one is the reason we stop in Herceg Novi.</p>
+    <div class="books">
+      <div class="book">
+        <span class="yr">1945</span>
+        <div>
+          <h3><a href="https://en.wikipedia.org/wiki/The_Bridge_on_the_Drina">The Bridge on the Drina</a> — Ivo Andrić</h3>
+          <p>Four centuries of one Bosnian town, told entirely through the stone bridge at its centre. It won him the Nobel Prize in 1961. We pass his house on the Monday.</p>
+        </div>
+      </div>
+      <div class="book">
+        <span class="yr">1941</span>
+        <div>
+          <h3><a href="https://en.wikipedia.org/wiki/Black_Lamb_and_Grey_Falcon">Black Lamb and Grey Falcon</a> — Rebecca West</h3>
+          <p>The great travel book about this part of the world, written on the edge of the war that ended it. It is enormous — read the Dalmatia and Montenegro chapters and leave the rest.</p>
+        </div>
+      </div>
+      <div class="book">
+        <span class="yr">1847</span>
+        <div>
+          <h3><a href="https://en.wikipedia.org/wiki/The_Mountain_Wreath">The Mountain Wreath</a> — Petar II Petrović Njegoš</h3>
+          <p>Montenegro's national epic, by the poet-prince buried on Lovćen. Short, strange, and much better if we end up taking the mountain day.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <h3>About this page</h3>
+    <p>Built in October 2026 for a trip in May 2027. Times, prices and opening hours were accurate when I checked them and will all need checking again before anything is booked — I will keep this page updated as we decide things, so it is worth coming back to it rather than keeping a copy.</p>
+    <p>Flight times and fares: Google Flights, checked 22 October 2026, per person one way. Border waits: <a href="https://www.navigate-dubrovnik.com/border-crossing-updates">Navigate Dubrovnik</a>. Transfer prices: <a href="https://easybalkantransfers.com/transfers/tivat-to-dubrovnik-private-transfer/">Easy Balkan Transfers</a>.</p>
+
+    <h3 style="margin-top:2rem">Photographs</h3>
+    <p style="max-width:42rem">All from Wikimedia Commons, reused under their licences. In order of appearance:</p>
+    <div class="credits" id="credits"></div>
+
+    <div class="seal">
+      <p style="margin:0">Made for Pai, by Helena. 🇲🇪 🇭🇷</p>
+    </div>
+  </div>
+</footer>
+
+<div class="tally" id="tally">
+  <div class="tally-in">
+    <span><b id="tally-n">0</b> of <span id="tally-t">7</span> chosen<span id="tally-who"></span></span>
+    <span class="grow"></span>
+    <a href="#choices" class="btn ghost" style="text-decoration:none">See them all</a>
+    <button class="btn solid" id="tally-send">Send to Helena</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var KEY = "adriatic27.picks", WHOKEY = "adriatic27.who";
+  var WHATSAPP = "";           // set to a number (digits only, with country code) to address the message
+  var store = {}, who = "";
+
+  function load(){
+    try{
+      store = JSON.parse(localStorage.getItem(KEY) || "{}") || {};
+      who = localStorage.getItem(WHOKEY) || "";
+    }catch(e){ store = {}; who = ""; }
+  }
+  function save(){
+    try{
+      localStorage.setItem(KEY, JSON.stringify(store));
+      localStorage.setItem(WHOKEY, who);
+    }catch(e){ /* private browsing — picks just won't persist */ }
+  }
+
+  var groups = [].slice.call(document.querySelectorAll(".opts"));
+  var total  = groups.length;
+
+  function paint(){
+    groups.forEach(function(g){
+      var q = g.dataset.q;
+      [].slice.call(g.querySelectorAll(".opt")).forEach(function(b){
+        b.setAttribute("aria-pressed", store[q] === b.dataset.a ? "true" : "false");
+      });
+    });
+
+    var list = document.getElementById("summary");
+    list.innerHTML = "";
+    groups.forEach(function(g){
+      var q = g.dataset.q, a = store[q];
+      var li = document.createElement("li");
+      var qs = document.createElement("span"); qs.className = "q"; qs.textContent = q;
+      var as = document.createElement("span");
+      as.className = "a" + (a ? "" : " none");
+      as.textContent = a || "not chosen yet";
+      li.appendChild(qs); li.appendChild(as); list.appendChild(li);
+    });
+
+    var n = groups.filter(function(g){ return store[g.dataset.q]; }).length;
+    document.getElementById("tally-n").textContent = n;
+    document.getElementById("tally-t").textContent = total;
+    document.getElementById("tally-who").textContent = who ? " · " + who : "";
+    document.getElementById("tally").classList.toggle("on", n > 0);
+    document.getElementById("who-now").textContent = who ? "— saved as " + who : "";
+    [].slice.call(document.querySelectorAll("[data-who]")).forEach(function(b){
+      b.classList.toggle("solid", b.dataset.who === who);
+    });
+  }
+
+  groups.forEach(function(g){
+    g.addEventListener("click", function(ev){
+      var b = ev.target.closest(".opt");
+      if(!b || !g.contains(b)) return;
+      if(ev.target.closest("a")) return;          // let the links inside options work
+      var q = g.dataset.q;
+      store[q] = (store[q] === b.dataset.a) ? "" : b.dataset.a;
+      if(!store[q]) delete store[q];
+      save(); paint();
+    });
+  });
+
+  [].slice.call(document.querySelectorAll("[data-who]")).forEach(function(b){
+    b.addEventListener("click", function(){ who = b.dataset.who; save(); paint(); });
+  });
+
+  function message(){
+    var lines = [(who || "Someone") + "'s picks for the Adriatic, 21–26 May 2027:", ""];
+    groups.forEach(function(g){
+      var a = store[g.dataset.q];
+      if(a) lines.push("• " + g.dataset.q + ": " + a);
+    });
+    var missing = groups.filter(function(g){ return !store[g.dataset.q]; });
+    if(missing.length){
+      lines.push("", "Still undecided: " + missing.map(function(g){ return g.dataset.q; }).join(", "));
+    }
+    return lines.join("\n");
+  }
+
+  function say(t){
+    var el = document.getElementById("said");
+    el.textContent = t;
+    setTimeout(function(){ el.textContent = ""; }, 3200);
+  }
+
+  function send(){
+    var url = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(message());
+    window.open(url, "_blank", "noopener");
+  }
+  document.getElementById("send").addEventListener("click", send);
+  document.getElementById("tally-send").addEventListener("click", send);
+
+  document.getElementById("copy").addEventListener("click", function(){
+    var txt = message();
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(function(){ say("Copied."); },
+                                             function(){ say("Could not copy — select the list above."); });
+    } else { say("Could not copy — select the list above."); }
+  });
+
+  document.getElementById("reset").addEventListener("click", function(){
+    store = {}; save(); paint(); say("Cleared.");
+  });
+
+  // photo credits, from the same file the download script wrote
+  fetch("img/credits.json").then(function(r){ return r.json(); }).then(function(rows){
+    var box = document.getElementById("credits");
+    rows.forEach(function(c){
+      var p = document.createElement("p");
+      p.style.margin = "0 0 .5rem";
+      var a = document.createElement("a");
+      a.href = c.source; a.target = "_blank"; a.rel = "noopener";
+      a.textContent = c.title.replace(/\.(jpg|jpeg|png|JPG)$/i, "");
+      p.appendChild(a);
+      p.appendChild(document.createTextNode(" — " + c.author + ", " + c.licence));
+      box.appendChild(p);
+    });
+  }).catch(function(){
+    document.getElementById("credits").textContent =
+      "Wikimedia Commons contributors, under CC BY, CC BY-SA and public domain licences.";
+  });
+
+  load(); paint();
+})();
+</script>
+</body>
+</html>
