@@ -183,6 +183,22 @@
   }
   .opt[aria-pressed="true"] .opt-tag{opacity:1}
 
+  .opt.pic{display:grid;grid-template-columns:104px 1fr;gap:14px;align-items:center}
+  .opt.pic img{width:104px;height:78px;object-fit:cover;border:1px solid var(--line-firm)}
+  @media (max-width:520px){
+    .opt.pic{grid-template-columns:72px 1fr;gap:11px}
+    .opt.pic img{width:72px;height:60px}
+  }
+
+  /* ── the things-we-stand-in-front-of band ─ */
+  .band{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:30px}
+  .band figure{margin:0}
+  .band img{width:100%;height:190px;object-fit:cover}
+  .band figcaption{margin-top:.6rem;font-size:1rem;line-height:1.45;color:var(--ink-soft)}
+  .band figcaption b{color:var(--ink);font-weight:600;display:block}
+  @media (max-width:860px){.band{grid-template-columns:repeat(2,1fr);gap:18px}.band img{height:150px}}
+  @media (max-width:430px){.band{grid-template-columns:1fr}}
+
   /* ── tables ─────────────────────────────── */
   table{border-collapse:collapse;width:100%;font-size:1rem;margin-top:1.2rem}
   caption{text-align:left;font-size:1rem;color:var(--ink-soft);padding-bottom:.6rem}
@@ -481,9 +497,9 @@
       <h4>Tuesday is yours. Which one?</h4>
       <p class="why">One is a day out with oysters, one is an island you can swim off, one is doing almost nothing in a very beautiful place.</p>
       <div class="opts" data-q="Tuesday 25 May">
-        <button class="opt" data-a="Ston and Mali Ston — walls and oysters"><strong>Ston, for the walls and the oysters <span class="opt-tag">PICKED</span></strong><span>An hour north. Five kilometres of medieval wall built to guard the salt pans — Ragusa's actual source of money — then oysters pulled out of Mali Ston bay, farmed there since Roman times. About five hours.</span></button>
-        <button class="opt" data-a="Lokrum island — gardens and swimming"><strong>Lokrum island <span class="opt-tag">PICKED</span></strong><span>Fifteen minutes by boat from the old harbour. Botanical gardens planted by a Habsburg archduke, his peacocks still running loose, and swimming off the rocks.</span></button>
-        <button class="opt" data-a="A slow city day — museums and the cable car"><strong>A slow city day <span class="opt-tag">PICKED</span></strong><span>The Rector's Palace and the museums in the morning, then the <a href="https://www.dubrovnikcablecar.com/">cable car</a> up Mount Srđ for sunset over the islands.</span></button>
+        <button class="opt pic" data-a="Ston and Mali Ston — walls and oysters"><img src="img/ston.jpg" alt="The walls of Ston running over the hills above the town" loading="lazy"><span><strong>Ston, for the walls and the oysters <span class="opt-tag">PICKED</span></strong><span>An hour north. Five kilometres of medieval wall built to guard the salt pans — Ragusa's actual source of money — then oysters pulled out of Mali Ston bay, farmed there since Roman times. About five hours.</span></span></button>
+        <button class="opt pic" data-a="Lokrum island — gardens and swimming"><img src="img/lokrum.jpg" alt="The rocky, wooded shoreline of Lokrum island" loading="lazy"><span><strong>Lokrum island <span class="opt-tag">PICKED</span></strong><span>Fifteen minutes by boat from the old harbour. Botanical gardens planted by a Habsburg archduke, his peacocks still running loose, and swimming off the rocks.</span></span></button>
+        <button class="opt pic" data-a="A slow city day — museums and the cable car"><img src="img/srd.jpg" alt="The cable car rising to Mount Srđ above Dubrovnik" loading="lazy"><span><strong>A slow city day <span class="opt-tag">PICKED</span></strong><span>The Rector's Palace and the museums in the morning, then the <a href="https://www.dubrovnikcablecar.com/">cable car</a> up Mount Srđ for sunset over the islands.</span></span></button>
       </div>
     </div>
   </div>
@@ -500,6 +516,31 @@
   </div>
 </div>
 </div>
+
+<section class="shade">
+  <div class="wrap">
+    <h2>Four things we will stand in front of</h2>
+    <p class="lede">Not a to-do list. Just the four that are worth stopping at, in the order we meet them.</p>
+    <div class="band">
+      <figure>
+        <img src="img/tryphon.jpg" alt="The twin bell towers of St Tryphon's cathedral in Kotor" loading="lazy">
+        <figcaption><b>St Tryphon, Kotor</b>Consecrated in 1166 and rebuilt after earthquakes, which is why its two bell towers do not match. Monday, 7:30am, with nobody in it.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/herceg-novi.jpg" alt="Herceg Novi rising in terraces above its harbour" loading="lazy">
+        <figcaption><b>Herceg Novi</b>Founded in 1382 and fought over by everyone since — Bosnians, Ottomans, Venetians, Spanish, Austrians. Our coffee stop on the way to the border.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/lovrijenac.jpg" alt="Fort Lovrijenac on its rock outside the walls of Dubrovnik" loading="lazy">
+        <figcaption><b>Fort Lovrijenac</b>Built on a rock outside the walls so that no garrison inside could ever turn it on the city. Our walls ticket covers it.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/mali-ston.jpg" alt="The small harbour of Mali Ston with oyster beds offshore" loading="lazy">
+        <figcaption><b>Mali Ston</b>The bay where the oysters come from, fresh water meeting salt. If you choose Tuesday's first option, this is lunch.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
 
 <!-- ───────────── the mountain option ───────────── -->
 <section class="deep">
