@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..600&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <style>
   :root{
     --chart:#DDE6E3;
@@ -120,7 +121,7 @@
   .day:nth-child(even) > figure{order:2}
   @media (max-width:860px){
     .day{grid-template-columns:1fr}
-    .day > figure{order:-1 !important;position:static;height:230px}
+    .day > figure{order:-1 !important;position:relative;height:260px}
     .day-body{padding:36px 0 44px}
   }
   .daymark{
@@ -147,6 +148,7 @@
     font-size:1.05rem
   }
   .note b{font-style:normal;font-weight:600;color:var(--ink)}
+  section.deep .note b{color:#F0F6F3}
 
   /* ── choices ────────────────────────────── */
   .choice{
@@ -179,9 +181,10 @@
   .opt[aria-pressed="true"] span{color:#4A3408}
   .opt-tag{
     float:right;font-family:Karla,sans-serif;font-size:.7rem;font-weight:700;
-    letter-spacing:.09em;opacity:0;margin-left:.6rem
+    letter-spacing:.09em;display:none;margin-left:.6rem
   }
-  .opt[aria-pressed="true"] .opt-tag{opacity:1}
+  .opt .opt-tag{display:none}
+  .opt[aria-pressed="true"] .opt-tag{display:inline}
 
   .opt.pic{display:grid;grid-template-columns:104px 1fr;gap:14px;align-items:center}
   .opt.pic img{width:104px;height:78px;object-fit:cover;border:1px solid var(--line-firm)}
@@ -198,6 +201,16 @@
   .band figcaption b{color:var(--ink);font-weight:600;display:block}
   @media (max-width:860px){.band{grid-template-columns:repeat(2,1fr);gap:18px}.band img{height:150px}}
   @media (max-width:430px){.band{grid-template-columns:1fr}}
+
+  /* ── photo strips and list thumbnails ──── */
+  .strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:1.5rem 0 1.3rem;max-width:var(--measure)}
+  .strip figure{margin:0}
+  .strip img{width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--chart-2)}
+  .strip figcaption{font-family:Karla,sans-serif;font-size:.72rem;letter-spacing:.02em;color:var(--ink-soft);margin-top:.35rem;line-height:1.35}
+  @media (max-width:520px){.strip{gap:6px}.strip figcaption{font-size:.66rem}}
+  .todo li.p{display:grid;grid-template-columns:84px 1fr;gap:14px;align-items:start}
+  .todo li.p > img{width:84px;height:84px;object-fit:cover;margin-top:.3rem;background:var(--chart-2)}
+  @media (max-width:520px){.todo li.p{grid-template-columns:64px 1fr;gap:11px}.todo li.p > img{width:64px;height:64px}}
 
   /* ── things to do ───────────────────────── */
   .more{margin-top:2.2rem;max-width:var(--measure)}
@@ -230,7 +243,7 @@
   .cols h3{font-size:1.2rem}
   .cols p{max-width:none;font-size:1.04rem;margin:.2rem 0 0}
   .books{display:grid;gap:26px;margin-top:28px;max-width:44rem}
-  .book{display:grid;grid-template-columns:3.2rem 1fr;gap:1rem;align-items:start}
+  .book{display:grid;grid-template-columns:3.6rem 1fr;gap:1rem;align-items:start}
   .book .yr{font-family:Karla,sans-serif;font-size:.78rem;font-weight:700;color:var(--brass);padding-top:.42rem}
   .book p{margin:.15rem 0 0;font-size:1.04rem;max-width:none}
 
@@ -275,6 +288,43 @@
   .summary-list .a{text-align:right;font-weight:600}
   .summary-list .a.none{font-weight:400;font-style:italic;opacity:.6}
 
+  /* ── the map ────────────────────────────── */
+  .map-tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}
+  .map-tools .btn{color:var(--ink);border-color:var(--line-firm)}
+  .map-tools .btn:hover,.map-tools .btn.solid{background:var(--ink);border-color:var(--ink);color:#F0F6F3}
+  .map{height:min(72vh,580px);margin-top:12px;border:1px solid var(--line-firm);background:var(--chart-2);z-index:1}
+  @media (max-width:620px){.map{height:440px}}
+  .legend{list-style:none;padding:0;margin:14px 0 0;display:flex;flex-wrap:wrap;gap:6px 22px;
+          font-family:Karla,sans-serif;font-size:.8rem;color:var(--ink-soft)}
+  .legend i{display:inline-block;width:22px;height:4px;vertical-align:middle;margin-right:7px;border-radius:2px}
+  .legend i.hollow{width:12px;height:12px;border-radius:50%;border:2px solid var(--ink-soft);background:#fff}
+  .pin{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;
+       font:700 12px/1 Karla,sans-serif;color:#fff;border:2px solid #fff;box-shadow:0 1px 5px rgba(10,33,41,.4)}
+  .pin.alt{width:20px;height:20px;background:#fff !important;border-width:2.5px;box-shadow:0 1px 3px rgba(10,33,41,.3)}
+  .leaflet-container{font-family:"EB Garamond",Georgia,serif}
+  .leaflet-popup-content{margin:12px 16px;font-size:15px;line-height:1.45}
+  .leaflet-popup-content b{display:block;font-size:17px}
+  .leaflet-popup-content .when{display:block;font-family:Karla,sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--brass);margin:2px 0 4px}
+  .leaflet-popup-content a{color:var(--verdigris)}
+
+  /* ── the wish box ───────────────────────── */
+  .wish{display:block;margin:1.8rem 0 .5rem;font-size:1.06rem;max-width:40rem}
+  .wish span{color:var(--ink-soft);font-style:italic}
+  .wish-box{display:block;width:100%;max-width:40rem;font:inherit;font-size:1.02rem;color:var(--ink);
+            background:rgba(255,255,255,.6);border:1px solid var(--line-firm);padding:10px 12px;resize:vertical}
+  .wish-box:focus{outline:2.5px solid var(--brass);outline-offset:1px}
+
+  /* ── print: the plan on paper ───────────── */
+  @media print{
+    .tally,.map-tools,.map,.legend,#map-section,.who,.wish,.wish-box,.rhumb{display:none !important}
+    body{background:#fff;font-size:12pt}
+    section,section.deep,.shade,footer{background:#fff !important;color:#000 !important;padding:18px 0}
+    section.deep h2,section.deep h3,section.deep .lede,section.deep .note{color:#000 !important}
+    .day{display:block;break-inside:avoid}
+    .day > figure{position:relative;height:200px}
+    .hero img{opacity:1}
+  }
+
   /* ── footer ─────────────────────────────── */
   footer{
     background:var(--deep);color:#8FAEA7;padding:54px 0 108px;
@@ -300,7 +350,7 @@
   </svg>
   <div class="hero-text"><div class="hero-inner">
     <h1>Dad &amp; Me<br>on the <em>Adriatic</em></h1>
-    <p class="dates">21 – 25 MAY 2027 · MONTENEGRO &amp; CROATIA</p>
+    <p class="dates">21 – 25 MAY 2027 · MONTENEGRO &amp; CROATIA<span id="countdown"></span></p>
     <p class="sub">Four nights, two countries, one wedding and one birthday.</p>
   </div></div>
 </header>
@@ -310,8 +360,8 @@
   <div class="wrap">
     <div class="letter">
       <p>Pai, here is the trip. Not a brochure — the actual plan, with the parts we still get to decide together left open for you.</p>
-      <p>We land on the Bay of Kotor on the Friday, a deep green bay with grey mountains falling straight into it. Saturday belongs to the wedding. Sunday is my birthday, and I want to spend it in Perast, which is one street of stone palaces facing two tiny island churches. Then we cross into Croatia and finish in Dubrovnik — a city you have never seen, and the one place I have been without you that I have most wanted to take you to.</p>
-      <p>Everything here is about 90 minutes from everything else. We will not need a car and we will not rush. Every place below links to somewhere you can read more, and the links all open in a new tab so you never lose your place. Wherever you see a <b>gold box</b>, tap the option you prefer. I will see what you chose and we decide on the phone.</p>
+      <p>We land on the Bay of Kotor on the Friday, a deep green bay with grey mountains falling straight into it. Saturday belongs to the wedding. Sunday is my birthday, and I want to spend it in Perast, which is one street of stone palaces facing two tiny island churches. Then we cross into Croatia and finish in Dubrovnik, which was your idea. I am very glad it was: I went once, years ago with friends, and I remember really loving it, so I wanted to go back too — and this time with you.</p>
+      <p>Nothing here is more than about two hours' drive from anything else. We will not need a car and we will not rush. Every place below links to somewhere you can read more, and the links all open in a new tab so you never lose your place. Wherever you see a <b>gold box</b>, tap the option you prefer. When you have been through them, press <b>Send</b> at the bottom and your picks come to me on WhatsApp — then we decide on the phone.</p>
       <p class="sign">— Helena</p>
     </div>
   </div>
@@ -326,19 +376,19 @@
     <div class="wide-scroll">
       <table>
         <caption>Where we sleep, night by night</caption>
-        <thead><tr><th>Night</th><th>Date</th><th>Where</th><th>Paid by</th></tr></thead>
+        <thead><tr><th>Night</th><th>Date</th><th>Where we sleep</th></tr></thead>
         <tbody>
-          <tr><td>1</td><td>Fri 21 May</td><td>The wedding coast</td><td>The bride — thank you</td></tr>
-          <tr><td>2</td><td>Sat 22 May</td><td>The wedding coast</td><td>The bride</td></tr>
-          <tr><td>3</td><td>Sun 23 May</td><td>Perast, on the bay</td><td>Us</td></tr>
-          <tr><td>4</td><td>Mon 24 May</td><td>Dubrovnik</td><td>Us</td></tr>
-          <tr><td>—</td><td>Tue 25 May</td><td>Home by 21:55</td><td>—</td></tr>
+          <tr><td>1</td><td>Fri 21 May</td><td>The wedding coast, as the bride's guests — thank you</td></tr>
+          <tr><td>2</td><td>Sat 22 May</td><td>The wedding coast</td></tr>
+          <tr><td>3</td><td>Sun 23 May</td><td>Perast, on the bay</td></tr>
+          <tr><td>4</td><td>Mon 24 May</td><td>Dubrovnik</td></tr>
+          <tr><td>—</td><td>Tue 25 May</td><td>Home by 21:55</td></tr>
         </tbody>
       </table>
     </div>
 
     <div class="route">
-      <svg viewBox="0 0 980 190" role="img" aria-label="The route: fly into Tivat, two nights on the wedding coast, one night in Perast, early morning in Kotor, cross the border, two nights in Dubrovnik, fly home.">
+      <svg viewBox="0 0 980 190" role="img" aria-label="The route: fly into Tivat, two nights on the wedding coast, one night in Perast, early morning in Kotor, cross the border, one night in Dubrovnik, fly home on the Tuesday.">
         <line x1="40" y1="96" x2="940" y2="96" stroke="#2C4C55" stroke-width="1.5"/>
         <line x1="40" y1="96" x2="940" y2="96" stroke="#D9A94A" stroke-width="1.5" stroke-dasharray="4 6" opacity=".8"/>
 
@@ -364,12 +414,12 @@
           <circle cx="412" cy="96" r="5.5" fill="#EAF1EE"/>
           <text class="rt-place" x="412" y="124" text-anchor="middle">Perast</text>
           <text class="rt-day"   x="412" y="80"  text-anchor="middle">NIGHT 3 · BIRTHDAY</text>
-          <text class="rt-meta"  x="412" y="142" text-anchor="middle">40 MIN BY FERRY SHORTCUT</text>
+          <text class="rt-meta"  x="412" y="142" text-anchor="middle">40 MIN, OVER THE LITTLE FERRY</text>
         </g>
         <g>
           <circle cx="560" cy="96" r="4" fill="none" stroke="#8FAEA7" stroke-width="1.5"/>
           <text class="rt-place" x="560" y="124" text-anchor="middle">Kotor</text>
-          <text class="rt-meta"  x="560" y="142" text-anchor="middle">7:30 AM, NO CROWDS</text>
+          <text class="rt-meta"  x="560" y="142" text-anchor="middle">MONDAY, EARLY</text>
         </g>
         <g>
           <circle cx="800" cy="96" r="5.5" fill="#EAF1EE"/>
@@ -385,7 +435,28 @@
       </svg>
     </div>
 
-    <p class="note" style="margin-top:2rem;border-left-color:#4A6A72;color:#A9C3BC"><b>Why four and not five.</b> Four nights is what we have. If I manage to win a fifth, it goes in Dubrovnik — we stay the Tuesday too and fly home Wednesday instead, which turns Tuesday into a real free day. That is the only version where the mountains at Lovćen, or the oysters at Ston, would fit.</p>
+    <p class="note" style="margin-top:2rem;border-left-color:#4A6A72;color:#A9C3BC"><b>Four nights.</b> It is what we have, and it is enough for this. Should it ever become five, the extra night would go in Dubrovnik.</p>
+  </div>
+</section>
+
+<!-- ───────────── the map ───────────── -->
+<section id="map-section">
+  <div class="wrap">
+    <h2>Where everything is</h2>
+    <p class="lede">The real roads we drive, coloured by day. Tap a pin to see what happens there. The bay is smaller than the photographs make it look: Perast to Kotor is twenty minutes along the water.</p>
+    <div class="map-tools" role="group" aria-label="Zoom the map">
+      <button class="btn" data-view="all">The whole trip</button>
+      <button class="btn" data-view="bay">The Bay of Kotor</button>
+      <button class="btn" data-view="dbk">Dubrovnik</button>
+    </div>
+    <div class="map" id="map" role="region" aria-label="Map of the route from Tivat around the Bay of Kotor to Dubrovnik"></div>
+    <ul class="legend">
+      <li><i style="background:#35766B"></i>Fri · airport to Tivat (the venue is not fixed yet)</li>
+      <li><i style="background:#B4852F"></i>Sun · over the ferry to Perast</li>
+      <li><i style="background:#9C4A33"></i>Mon · Kotor, then over the border</li>
+      <li><i style="background:#102C36"></i>Tue · to the airport</li>
+      <li><i class="hollow"></i>An option, not a plan</li>
+    </ul>
   </div>
 </section>
 
@@ -408,12 +479,12 @@
 
     <div class="cols">
       <div>
-        <h3>There is no direct Amsterdam–Tivat on a Friday</h3>
-        <p>Only TUI flies Amsterdam to Tivat non-stop, and only on Wednesdays and Sundays. easyJet has announced the route, but it does not start until 29 June 2027 — five weeks after we go. So reaching Montenegro from Amsterdam on a Friday means either a connection through Belgrade, or flying into Dubrovnik and driving down.</p>
+        <h3>Friday morning</h3>
+        <p>The flight is at ten, so we leave home around half past seven. Belgrade is a short change of planes, an hour and a quarter. We land at Tivat, the bay's own small airport, at 14:35 — fifteen minutes from the water. There is no direct flight from Amsterdam on a Friday, so this is the quickest way in.</p>
       </div>
       <div>
-        <h3>Why Tivat and not Podgorica</h3>
-        <p>Montenegro has two airports. Tivat is fifteen minutes from the bay; Podgorica, the capital's, is an hour and a quarter. There is a Podgorica flight that lands at 12:40 and would put us on the bay about half an hour earlier — but it leaves Amsterdam at 07:00 instead of 10:00 and costs more. Three hours of sleep for thirty minutes is a bad trade.</p>
+        <h3>Tuesday afternoon</h3>
+        <p>We check out in the morning, leave the bags with the hotel, and collect them on the way to the airport. Dubrovnik's airport is half an hour south of the old town. Munich is the change on the way home, and we are in Amsterdam at 21:55.</p>
       </div>
     </div>
 
@@ -425,7 +496,7 @@
 <section>
   <div class="wrap narrow" style="max-width:var(--measure)">
     <h2>Five days, hour by hour</h2>
-    <p class="lede">Five days on the ground, Friday to Tuesday. The cruise ships are the one thing both Kotor and Dubrovnik have in common: day visitors fill the old towns from about 10am to 4pm, so everything below is arranged around being somewhere else at those hours.</p>
+    <p class="lede">Friday to Tuesday. Kotor and Dubrovnik have one thing in common: cruise ships. Their passengers fill the old towns from about ten to four, so the plan is built around being somewhere else at those hours. The 2027 calendars so far are kind to us — one small ship in Kotor on our Monday, none in Dubrovnik that day — but ships get added, so I will check again the week before.</p>
   </div>
 </section>
 
@@ -433,86 +504,110 @@
 <div class="day">
   <figure><img src="img/porto-montenegro.jpg" alt="Yachts and palm trees along the waterfront promenade at Porto Montenegro in Tivat" loading="lazy"></figure>
   <div class="day-body">
-    <div class="daymark"><span class="n">1</span><span class="when">FRIDAY 21 MAY · ARRIVE</span></div>
+    <div class="daymark"><span class="n">1</span><span class="when">FRIDAY 21 MAY · ARRIVE · EASY</span></div>
     <h3>Land on the bay</h3>
     <p class="intro"><a href="https://en.wikipedia.org/wiki/Tivat" target="_blank" rel="noopener">Tivat</a> was a naval town for a century — Austro-Hungarian first, then Yugoslav, with submarine pens cut into the hillside that are still there. In 2006 the navy yard was sold and became a marina for very large boats. The result is odd and rather enjoyable: palm trees and superyachts along one side of the road, an ordinary Montenegrin town getting on with its day on the other. The old town is five minutes inland and half the price.</p>
     <div class="beat"><span class="t">14:35</span><p>Land at Tivat. Fifteen minutes to anywhere on this side of the bay.</p></div>
-    <div class="beat"><span class="t">PM</span><p>Nothing is planned, deliberately — we will probably be with the wedding people. But if an afternoon opens up, there is more below than we could do in three days.</p></div>
+    <div class="beat"><span class="t">PM</span><p>Nothing is planned, deliberately — we will probably be with the wedding people. It is a public holiday, so some shops may be shut; the cafés and restaurants on the water will not be. If an afternoon opens up, there is more below than we could do in three days.</p></div>
     <div class="beat"><span class="t">EVE</span><p>Dinner by the water and an early night, because Saturday is a wedding. The <a href="https://www.portomontenegro.com/" target="_blank" rel="noopener">Porto Montenegro</a> promenade is a gentle first walk — flat, lit, twenty minutes end to end.</p></div>
 
     <div class="more">
       <h4>IF THE AFTERNOON IS OURS</h4>
       <ul class="todo">
-        <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Naval+Heritage+Collection+Porto+Montenegro" target="_blank" rel="noopener">The Naval Heritage Collection</a> <span class="tag">Popular</span>
-          <p>The old navy's museum, inside the marina. You can climb down into a real Yugoslav submarine. The best thing in Tivat, and most people on the promenade walk straight past it.</p></li>
-        <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Gornja+Lastva+Tivat" target="_blank" rel="noopener">Gornja Lastva</a> <span class="tag q">Quieter</span>
-          <p>A stone village up the hill behind Tivat, half-abandoned and slowly being brought back. Fifteen minutes by car then a short walk, views straight down the bay, and usually nobody there at all.</p></li>
+        <li class="p"><img src="img/t/naval-heritage.jpg" alt="" loading="lazy"><div><a href="https://www.google.com/maps/search/?api=1&amp;query=Naval+Heritage+Collection+Porto+Montenegro" target="_blank" rel="noopener">The Naval Heritage Collection</a> <span class="tag">Popular</span>
+          <p>The old navy's museum, inside the marina, with a real Yugoslav submarine standing on the quay. The best thing in Tivat, and most people on the promenade walk straight past it.</p></div></li>
+        <li class="p"><img src="img/t/oysters.jpg" alt="" loading="lazy"><div><a href="https://boat-taxi.me/tours/fresh-seafood-experience" target="_blank" rel="noopener">Oysters and mussels, straight off the ropes</a> <span class="tag q">Quieter</span>
+          <p>A small boat out to a shellfish farm in the inner bay, where they pull the oysters and mussels up in front of you, open or steam them, and pour a glass of local white. Two hours, private, price on request. The bay grows its own; this is the way to eat them where they grow.</p></div></li>
+        <li class="p"><img src="img/t/gornja-lastva.jpg" alt="" loading="lazy"><div><a href="https://www.google.com/maps/search/?api=1&amp;query=Gornja+Lastva+Tivat" target="_blank" rel="noopener">Gornja Lastva</a> <span class="tag q">Quieter</span>
+          <p>A stone village up the hill behind Tivat, half-abandoned and slowly being brought back. Fifteen minutes by car then a short walk, views straight down the bay, and usually nobody there at all.</p></div></li>
+        <li class="p"><img src="img/t/blue-cave.jpg" alt="" loading="lazy"><div><a href="https://en.wikipedia.org/wiki/Mamula" target="_blank" rel="noopener">The Blue Cave and Mamula, by boat</a> <span class="tag">Popular</span>
+          <p>Boats run out to a sea cave that turns the water an unreasonable blue, usually stopping at the island fortress of Mamula on the way. Half a day, and much better on a calm morning than a windy afternoon.</p></div></li>
+        <li class="p"><img src="img/t/rose.jpg" alt="" loading="lazy"><div><a href="https://www.google.com/maps/search/?api=1&amp;query=Rose+Lustica+Montenegro" target="_blank" rel="noopener">Rose, at the tip of Luštica</a> <span class="tag q">Quieter</span>
+          <p>An old fishing village at the very end of the peninsula. A few houses, a few konobas, and nothing else to do — which is the point.</p></div></li>
         <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Plavi+Horizonti+beach+Tivat" target="_blank" rel="noopener">Plavi Horizonti</a> <span class="tag">Popular</span>
-          <p>Twenty minutes over the hill on the Luštica side. Actual sand, which is rare here, in a bay that shelves so gently you can wade out a long way. At 18°C this is optimism more than swimming.</p></li>
-        <li><a href="https://en.wikipedia.org/wiki/Mamula" target="_blank" rel="noopener">The Blue Cave and Mamula, by boat</a> <span class="tag">Popular</span>
-          <p>Boats run out to a sea cave that turns the water an unreasonable blue, usually stopping at the island fortress of Mamula on the way. Half a day, and much better on a calm morning than a windy afternoon.</p></li>
-        <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Rose+Lustica+Montenegro" target="_blank" rel="noopener">Rose, at the tip of Luštica</a> <span class="tag q">Quieter</span>
-          <p>An old fishing village at the very end of the peninsula, reached by a small boat across the bay mouth. A few houses, a few konobas, and nothing else to do — which is the point.</p></li>
+          <p>Twenty minutes over the hill on the Luštica side. Actual sand, which is rare here, in a bay that shelves so gently you can wade out a long way. At 18 °C this is optimism more than swimming.</p></li>
       </ul>
     </div>
-    <p class="note"><b>What you are walking on.</b> The marina's berths are the old navy slipways, and one of the submarines in the museum was built right here.</p>
+    <p class="note"><b>A story for the first dinner.</b> We land on the country's 21st birthday. On 21 May 2006 Montenegro voted on leaving its union with Serbia, and the EU set the bar at 55% — higher than a simple majority. The yes vote came in at <a href="https://en.wikipedia.org/wiki/2006_Montenegrin_independence_referendum" target="_blank" rel="noopener">55.5%</a>, on an 86% turnout. A country decided by half a percentage point.</p>
+    <p class="note" style="margin-top:1.1rem"><b>What you are walking on.</b> The marina's berths are the old navy slipways, and the submarine on the quay was built for the Yugoslav navy.</p>
   </div>
 </div>
 
 <div class="day">
   <figure><img src="img/bay-of-kotor.jpg" alt="The Bay of Kotor: steep grey mountains dropping into deep green water" loading="lazy"></figure>
   <div class="day-body">
-    <div class="daymark"><span class="n">2</span><span class="when">SATURDAY 22 MAY · THE WEDDING</span></div>
+    <div class="daymark"><span class="n">2</span><span class="when">SATURDAY 22 MAY · THE WEDDING · DANCING</span></div>
     <h3>The day belongs to them</h3>
     <div class="beat"><span class="t">AM</span><p>Sleep in. Swim if you are brave — the sea is about 18 °C in late May, which is colder than it looks.</p></div>
-    <div class="beat"><span class="t">PM</span><p>The wedding, and then dancing. Nothing else is planned, deliberately.</p></div>
+    <div class="beat"><span class="t">PM</span><p>The wedding, and then dancing. Nothing else is planned, deliberately. Who, where and what to wear: I will add it here as soon as the couple confirm the venue.</p></div>
     <p class="note"><b>Not a fjord.</b> Everyone calls <a href="https://en.wikipedia.org/wiki/Bay_of_Kotor" target="_blank" rel="noopener">this bay</a> Europe's southernmost fjord. It isn't one — a fjord is carved by ice, and this is a river canyon that the sea flooded. The correct word is a ria, and it is why the water goes down so steeply so close to shore.</p>
-    <p class="note" style="margin-top:1.1rem"><b>And it is the national day.</b> 21 and 22 May are Montenegro's Independence Day, marking the referendum of 2006. So they are getting married on the country's birthday. Expect flags, fireworks somewhere, and every restaurant in the bay full.</p>
+    <p class="note" style="margin-top:1.1rem"><b>And it is still the national holiday.</b> Independence Day is two days long, the 21st and the 22nd, so they are getting married on the country's birthday. Expect flags on the balconies and every restaurant in the bay full.</p>
   </div>
 </div>
 
 <div class="day">
   <figure><img src="img/our-lady.jpg" alt="The church of Our Lady of the Rocks on its small man-made island, with the mountains of the bay behind" loading="lazy"></figure>
   <div class="day-body">
-    <div class="daymark"><span class="n">3</span><span class="when">SUNDAY 23 MAY · MY BIRTHDAY</span></div>
+    <div class="daymark"><span class="n">3</span><span class="when">SUNDAY 23 MAY · MY BIRTHDAY · EASY, MOSTLY BY BOAT</span></div>
     <h3>Perast, and the island the sailors built</h3>
-    <p class="intro"><a href="https://en.wikipedia.org/wiki/Perast" target="_blank" rel="noopener">Perast</a> is one street. Sixteen baroque palaces and a dozen churches for a village that now holds a few hundred people — because in the 1700s this was a small sea power with its own merchant fleet, rich enough that Peter the Great sent Russian noblemen here to learn navigation. Then steam replaced sail, the money left, and the village simply stopped. Nothing modern was ever built on top of it. It faces west, so the whole street turns gold about an hour before sunset.</p>
-    <div class="beat"><span class="t">11:00</span><p>Late breakfast, then over to Perast. From the Tivat side the <a href="https://www.google.com/maps/search/?api=1&amp;query=Kamenari+Lepetane+ferry" target="_blank" rel="noopener">Kamenari–Lepetane ferry</a> cuts the drive to about forty minutes — ten of them on the water.</p></div>
-    <div class="beat"><span class="t">15:00</span><p>A small boat out to <a href="https://en.wikipedia.org/wiki/Our_Lady_of_the_Rocks" target="_blank" rel="noopener">Our Lady of the Rocks</a>. Better: hire a private boat for an hour and go slowly round the bay instead of in a queue.</p></div>
-    <div class="beat"><span class="t">19:30</span><p>Golden hour on the waterfront with a glass of local wine. The whole village is one street long, so nothing is more than four minutes away.</p></div>
-    <div class="beat"><span class="t">21:00</span><p>Birthday dinner — booked months ahead, because Perast is tiny.</p></div>
+    <p class="intro"><a href="https://en.wikipedia.org/wiki/Perast" target="_blank" rel="noopener">Perast</a> is one street. About twenty palaces and nineteen churches for a village of 237 people — because in the 1700s this was a small sea power with its own merchant fleet, good enough at navigation that in 1698 Peter the Great's young noblemen were sent here to learn it. Then steam replaced sail, the money left, and the village simply stopped. Nothing modern was ever built on top of it. The street faces the islands and the late sun, until the mountains take it a little after seven.</p>
+    <div class="strip">
+      <figure><img src="img/perast-waterfront.jpg" alt="Perast's waterfront at eye level, stone houses and the bell tower" loading="lazy"><figcaption>The one street</figcaption></figure>
+      <figure><img src="img/kamenari-ferry.jpg" alt="The Kamenari–Lepetane car ferry crossing the narrow Verige strait" loading="lazy"><figcaption>The ferry over the Verige</figcaption></figure>
+      <figure><img src="img/our-lady-interior.jpg" alt="Inside Our Lady of the Rocks: walls covered in silver votive plaques and paintings" loading="lazy"><figcaption>Inside the island church</figcaption></figure>
+    </div>
+    <div class="beat"><span class="t">11:00</span><p>Late breakfast, then round to Perast. There are two ways, both about forty minutes: the road through Kotor, or the little <a href="https://www.google.com/maps/search/?api=1&amp;query=Kamenari+Lepetane+ferry" target="_blank" rel="noopener">Kamenari–Lepetane ferry</a> across the Verige, the strait where the bay pinches to 340 metres. We take the ferry, because lunch is on that side. <i>Verige</i> means chains, and they say a chain was once stretched across the strait to keep ships out.</p></div>
+    <div class="beat"><span class="t">12:00</span><p>A birthday lunch on the way, at <a href="https://www.catovica-mlini.com/en/" target="_blank" rel="noopener">Konoba Ćatovića Mlini</a> in Morinj: old watermills that ground grain and olives for more than two hundred years, with mountain streams running through the garden into the sea. It closes at nine, which is why it is lunch and not dinner.</p></div>
+    <div class="beat"><span class="t">14:00</span><p>If we want it, ten minutes in <a href="https://muzejikotor.me/en/home/roman-mosaics/" target="_blank" rel="noopener">Risan</a>, the oldest town in the bay, where a 2nd-century Roman floor shows Hypnos, the god of sleep. Open on Sundays.</p></div>
+    <div class="beat"><span class="t">15:00</span><p>The boat out to <a href="https://en.wikipedia.org/wiki/Our_Lady_of_the_Rocks" target="_blank" rel="noopener">Our Lady of the Rocks</a>, at three sharp: a cruise ship is due in Kotor that afternoon, and we want the island before its excursions do.</p></div>
+    <div class="beat"><span class="t">16:30</span><p>The Perast Museum, which is shut on Mondays, so today is the day — or the bell tower, or nothing at all.</p></div>
+    <div class="beat"><span class="t">18:15</span><p>The last of the sun. The official sunset is 20:08, but the mountains behind Morinj take the light off the waterfront at about <b>ten past seven</b>, so golden hour here is earlier than you would think. Choose how we spend it, below.</p></div>
+    <div class="beat"><span class="t">21:00</span><p>Birthday dinner. Instead of a cake from a shop, I will ask the restaurant for a <b>Peraška torta</b>, the Perast almond cake — made with Maraschino and white wine, and since 2023 a <a href="https://www.gov.me/clanak/zasticen-naziv-garantovano-tradicionalnog-specijaliteta-peraska-torta" target="_blank" rel="noopener">protected traditional recipe</a>.</p></div>
     <div class="more">
       <h4>ALSO IN PERAST, ALL WITHIN FIVE MINUTES</h4>
       <ul class="todo">
-        <li><a href="https://www.google.com/maps/search/?api=1&amp;query=St+Nicholas+Church+Perast" target="_blank" rel="noopener">The bell tower of St Nicholas</a> <span class="tag">Popular</span>
-          <p>Commissioned in 1691 and never finished — the church beside it was meant to be far bigger. About €1 to climb the 55 metres to the platform, and from the top you see both islands, the whole village roofline and the mountains behind. The best view in Perast and the cheapest thing in this document.</p></li>
-        <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Perast+Museum+Bujovic+Palace" target="_blank" rel="noopener">The Perast Museum, in Bujović Palace</a> <span class="tag q">Quieter</span>
-          <p>A baroque palace on the waterfront holding the town's own history: navigation instruments, weapons, portraits of captains, and a balcony straight over the water. Small, about €2.50, and it explains how a village this size came to have sixteen palaces.</p></li>
-        <li><a href="https://en.wikipedia.org/wiki/Our_Lady_of_the_Rocks" target="_blank" rel="noopener">The museum inside the island church</a> <span class="tag">Popular</span>
-          <p>Attached to the chapel: silver votive plaques left by sailors who made it home, baroque paintings by Tripo Kokolja, and the tapestry. Ten minutes, and it is the reason to actually land rather than just circle the island.</p></li>
-        <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Perast+waterfront" target="_blank" rel="noopener">Swimming off the stones</a> <span class="tag q">Quieter</span>
-          <p>There is no beach, just ladders down from the promenade into very deep, very clear water. People who live here swim all summer. In May it is bracing and brief.</p></li>
+        <li class="p"><img src="img/t/perast-bell-tower.jpg" alt="" loading="lazy"><div><a href="https://www.google.com/maps/search/?api=1&amp;query=St+Nicholas+Church+Perast" target="_blank" rel="noopener">The bell tower of St Nicholas</a> <span class="tag">Popular</span>
+          <p>Commissioned in 1691 and never finished — the church beside it was meant to be far bigger. A small fee to climb the 55 metres to the platform, and from the top you see both islands, the whole village roofline and the mountains behind. The best view in Perast.</p></div></li>
+        <li class="p"><img src="img/t/bujovic-palace.jpg" alt="" loading="lazy"><div><a href="https://muzejikotor.me/en/home/perast-museum/" target="_blank" rel="noopener">The Perast Museum, in Bujović Palace</a> <span class="tag q">Quieter</span>
+          <p>A baroque palace on the waterfront holding the town's own history: captains' portraits, navigation instruments, a painting of the Russian noblemen at their lessons, and a balcony straight over the water. €8, open until eight, closed Mondays.</p></div></li>
+        <li class="p"><img src="img/t/our-lady-votive.jpg" alt="" loading="lazy"><div><a href="https://en.wikipedia.org/wiki/Our_Lady_of_the_Rocks" target="_blank" rel="noopener">The museum inside the island church</a> <span class="tag">Popular</span>
+          <p>Silver plaques left by sailors who made it home, many hammered with the ship that brought them back, baroque paintings by Tripo Kokolja, and the tapestry. Ten minutes, and it is the reason to actually land rather than just circle the island.</p></div></li>
+        <li class="p"><img src="img/t/sveti-dorde.jpg" alt="" loading="lazy"><div><a href="https://en.wikipedia.org/wiki/Sveti_%C4%90or%C4%91e_Island" target="_blank" rel="noopener">St George, the other island</a> <span class="tag q">Quieter</span>
+          <p>The natural one, with a 12th-century monastery and the graves of Perast's old captains under the cypresses. You cannot land, but every boat passes it. The legend: in 1813 a gunner in the French battery here fired on the village and killed the girl he loved, then stayed on the island to guard her grave.</p></div></li>
+        <li class="p"><img src="img/t/perast-boats.jpg" alt="" loading="lazy"><div><a href="https://www.google.com/maps/search/?api=1&amp;query=Perast+waterfront" target="_blank" rel="noopener">Swimming off the stones</a> <span class="tag q">Quieter</span>
+          <p>There is no beach, just ladders down from the promenade into very deep, very clear water. People who live here swim all summer. In May it is bracing and brief.</p></div></li>
+        <li><a href="https://en.wikipedia.org/wiki/Lipci_rock_art" target="_blank" rel="noopener">The painted rock at Lipci</a> <span class="tag q">Quieter</span>
+          <p>On the road just before Risan: red deer and hunters painted on a rock ledge thousands of years ago, and one panel that scholars read as a map of this bay. Badly signposted, almost never visited, ten minutes.</p></li>
       </ul>
     </div>
 
     <p class="note"><b>The island is handmade.</b> Sailors built it, stone by stone, around a rock where an icon was found in 1452 — dropping rocks and eventually scuttling captured ships on the spot. They still do it: every 22 July the village rows out at sunset and throws more stones in. Inside the church hangs a tapestry a woman named Jacinta embroidered over twenty-five years while waiting for her sailor to come home, using gold thread and her own hair. He did not come back.</p>
+    <p class="note" style="margin-top:1.1rem"><b>A story for the birthday dinner: "Ti con nu, nu con ti."</b> When the Republic of Venice fell in 1797, Perast was the last place still flying its flag. On 23 August the town gathered in the church, Count Giuseppe Visković made a speech to the flag — <i>you with us, we with you</i> — and they buried it under the high altar rather than hand it over.</p>
 
     <div class="choice">
       <h4>Where do I wake up on my birthday?</h4>
       <p class="why">Perast puts us on the water with dinner two minutes away. Huma is fifteen minutes off, more hotel than village, with pools facing the bay. I genuinely don't mind — so you pick.</p>
       <div class="opts" data-q="Birthday night bed">
-        <button class="opt" data-a="Perast waterfront — Heritage Grand or Hotel Conte"><strong>On the Perast waterfront <span class="opt-tag">PICKED</span></strong><span><a href="https://www.google.com/maps/search/?api=1&amp;query=Heritage+Grand+Perast" target="_blank" rel="noopener">Heritage Grand Perast</a> or <a href="https://www.google.com/maps/search/?api=1&amp;query=Hotel+Conte+Perast" target="_blank" rel="noopener">Hotel Conte</a>. Stone rooms, church bells, dinner downstairs, and the golden hour happens outside the window.</span></button>
-        <button class="opt" data-a="Huma Kotor Bay, Dobrota — the splurge"><strong>Huma Kotor Bay, the splurge <span class="opt-tag">PICKED</span></strong><span>Dobrota, near Kotor. Infinity pools over the water, fifteen minutes from Perast.</span></button>
+        <button class="opt pic" data-a="Perast waterfront — Heritage Grand or Hotel Conte"><img src="img/t/perast-waterfront.jpg" alt="" loading="lazy"><span><strong>On the Perast waterfront <span class="opt-tag">PICKED</span></strong><span><a href="https://www.google.com/maps/search/?api=1&amp;query=Heritage+Grand+Perast" target="_blank" rel="noopener">Heritage Grand Perast</a> or <a href="https://hotelconte.me/" target="_blank" rel="noopener">Hotel Conte</a>. Stone rooms, church bells, dinner downstairs, and the evening light outside the window.</span></span></button>
+        <button class="opt" data-a="Huma Kotor Bay, Dobrota — the splurge"><strong>Huma Kotor Bay, the splurge <span class="opt-tag">PICKED</span></strong><span>Dobrota, near Kotor. Infinity pools over the water, fifteen minutes from Perast — and closer to Kotor for Monday morning.</span></button>
+      </div>
+    </div>
+
+    <div class="choice">
+      <h4>How do we catch the last of the sun?</h4>
+      <p class="why">From about a quarter past six until the mountains take it. One is free and two minutes from the room; the other costs something and lasts twenty minutes longer.</p>
+      <div class="opts" data-q="Birthday sunset">
+        <button class="opt pic" data-a="On the Perast stones with a glass of Vranac"><img src="img/t/st-nicholas-perast.jpg" alt="" loading="lazy"><span><strong>On the stones, with a glass <span class="opt-tag">PICKED</span></strong><span>Two chairs on the quay, a glass of Vranac, the islands going gold in front of us. Over by about 19:10, and then a long blue hour before dinner.</span></span></button>
+        <button class="opt pic" data-a="A private boat out toward Ljuta"><img src="img/t/verige.jpg" alt="" loading="lazy"><span><strong>A private boat, out into the bay <span class="opt-tag">PICKED</span></strong><span>A small boat from about 18:15, drifting south-east toward Ljuta, where the sun stays on the water until about 19:30 and we look back at Perast and both islands. Local operators ask roughly <a href="https://sunrayskotor.me/sunset-tour/" target="_blank" rel="noopener">€150–200 for two hours</a>.</span></span></button>
       </div>
     </div>
 
     <div class="choice">
       <h4>And the birthday dinner?</h4>
-      <p class="why">All three are on or near the water. One is a chef's restaurant, one is a family's, one is a four-hundred-year-old mill in the next bay along.</p>
+      <p class="why">Both are in Perast. One is a chef's restaurant, one is a family's.</p>
       <div class="opts" data-q="Birthday dinner">
-        <button class="opt" data-a="Trattoria Rosmarino, Perast"><strong>Trattoria Rosmarino <span class="opt-tag">PICKED</span></strong><span>Refined seafood by chef Nikola Čelić, in the <a href="https://jre.eu/en/destination-bay-of-kotor-montenegro" target="_blank" rel="noopener">JRE young-chefs association</a>. The ambitious one. <a href="https://www.google.com/maps/search/?api=1&amp;query=Trattoria+Rosmarino+Perast" target="_blank" rel="noopener">Where it is</a>.</span></button>
+        <button class="opt" data-a="Trattoria Rosmarino, Perast"><strong>Trattoria Rosmarino <span class="opt-tag">PICKED</span></strong><span>Refined seafood by chef Nikola Čelić, a member of the <a href="https://jre.eu/en-gb/restaurants/montenegro/rosmarinoperast" target="_blank" rel="noopener">JRE young-chefs association</a>. The ambitious one. <a href="https://www.google.com/maps/search/?api=1&amp;query=Trattoria+Rosmarino+Perast" target="_blank" rel="noopener">Where it is</a>.</span></button>
         <button class="opt" data-a="Restaurant Conte, Perast"><strong>Restaurant Conte <span class="opt-tag">PICKED</span></strong><span>Family-run, tables on the stone quay with both islands in front of you, straightforwardly Mediterranean. The easy one. <a href="https://www.google.com/maps/search/?api=1&amp;query=Restaurant+Conte+Perast" target="_blank" rel="noopener">Where it is</a>.</span></button>
-        <button class="opt" data-a="Konoba Ćatovića Mlini, Morinj"><strong>Konoba Ćatovića Mlini <span class="opt-tag">PICKED</span></strong><span>A watermill in Morinj that the same family has held for over 200 years, with streams and ducks running through the garden. Fifteen minutes away and worth the drive. <a href="https://www.google.com/maps/search/?api=1&amp;query=Konoba+Catovica+Mlini+Morinj" target="_blank" rel="noopener">Where it is</a>.</span></button>
       </div>
     </div>
   </div>
@@ -521,81 +616,112 @@
 <div class="day">
   <figure><img src="img/kotor-oldtown.jpg" alt="A stone square in Kotor's walled old town, early and almost empty" loading="lazy"></figure>
   <div class="day-body">
-    <div class="daymark"><span class="n">4</span><span class="when">MONDAY 24 MAY · CROSS OVER</span></div>
-    <h3>Kotor at dawn, Dubrovnik by lunch</h3>
-    <p class="intro"><a href="https://en.wikipedia.org/wiki/Kotor" target="_blank" rel="noopener">Kotor</a> is a triangle of stone wedged between the water and a cliff, and <a href="https://en.wikipedia.org/wiki/Fortifications_of_Kotor" target="_blank" rel="noopener">its walls go straight up that cliff</a> — four and a half kilometres of them, climbing to a fortress 260 metres above the roofs. Inside there are almost no street names and no straight lines, just small squares that arrive without warning. Venice ran it for nearly four centuries and it still looks it. At half past seven in the morning the town belongs to the people who live there and to the cats; by eleven there can be three cruise ships in the bay.</p>
-    <div class="beat"><span class="t">07:30</span><p><a href="https://en.wikipedia.org/wiki/Kotor" target="_blank" rel="noopener">Kotor's old town</a> before the ships: in through the Sea Gate, the 12th-century cathedral of St Tryphon, coffee on a square with nobody on it.</p></div>
-    <div class="beat"><span class="t">09:30</span><p>A private driver round the bay. Coffee in <a href="https://en.wikipedia.org/wiki/Herceg_Novi" target="_blank" rel="noopener">Herceg Novi</a>, where Ivo Andrić spent what he called his happiest years — his house there is a small museum, and he is the first of the three books below.</p></div>
-    <div class="beat"><span class="t">11:30</span><p>The border. Monday morning is the gentlest slot of the week.</p></div>
-    <div class="beat"><span class="t">14:00</span><p>Check in, lie down, ice cream. We have earned a flat hour.</p></div>
-    <div class="beat"><span class="t">17:00</span><p>The <a href="https://citywallsdubrovnik.hr/" target="_blank" rel="noopener">city walls</a> as the crowds thin and the stone turns gold. Two kilometres, one to two hours, about 1,190 steps, last entry 6pm in May.</p></div>
-    <div class="beat"><span class="t">20:30</span><p>Dinner. Either <a href="https://www.360dubrovnik.com/" target="_blank" rel="noopener">Restaurant 360</a>, which has a Michelin star and sits inside the walls above the old harbour, or something small and unbothered in a side street.</p></div>
+    <div class="daymark"><span class="n">4</span><span class="when">MONDAY 24 MAY · CROSS OVER · THE LONG ONE</span></div>
+    <h3>Kotor early, Dubrovnik by lunch</h3>
+    <p class="intro"><a href="https://en.wikipedia.org/wiki/Kotor" target="_blank" rel="noopener">Kotor</a> is a triangle of stone wedged between the water and a cliff, and <a href="https://en.wikipedia.org/wiki/Fortifications_of_Kotor" target="_blank" rel="noopener">its walls go straight up that cliff</a> — four and a half kilometres of them, climbing to a fortress 260 metres above the roofs. Inside there are almost no street names and no straight lines, just small squares that arrive without warning. Venice ran it for nearly four centuries and it still looks it. At eight in the morning the town still belongs to the people who live there and to the cats.</p>
+    <div class="strip">
+      <figure><img src="img/kotor-sea-gate-wide.jpg" alt="Kotor's Sea Gate set into the old town walls" loading="lazy"><figcaption>In through the Sea Gate</figcaption></figure>
+      <figure><img src="img/herceg-novi-rooftops.jpg" alt="Herceg Novi's rooftops and towers above the bay" loading="lazy"><figcaption>Coffee in Herceg Novi</figcaption></figure>
+      <figure><img src="img/srd-panorama.jpg" alt="Dubrovnik's walled old town seen from Mount Srđ" loading="lazy"><figcaption>Dubrovnik from above</figcaption></figure>
+    </div>
+    <div class="beat"><span class="t">07:30</span><p>If they will run that early, a <a href="https://boat-taxi.me/kotor-to-perast-boat-taxi" target="_blank" rel="noopener">water taxi</a> from the Perast quay to Kotor — twenty minutes across the inner bay, arriving by sea the way the captains did, while the driver brings the bags round by road.</p></div>
+    <div class="beat"><span class="t">08:00</span><p><a href="https://en.wikipedia.org/wiki/Kotor" target="_blank" rel="noopener">Kotor's old town</a> before anyone else: in through the Sea Gate, the 12th-century cathedral of St Tryphon, breakfast on a square with nobody on it. Just outside the gate the morning market is setting up — figs, mountain cheese, pršut. (If you pick Huma for the birthday night, Kotor is five minutes away and this is an easy start.)</p></div>
+    <div class="beat"><span class="t">09:30</span><p>A private driver round the bay. Coffee in <a href="https://en.wikipedia.org/wiki/Herceg_Novi" target="_blank" rel="noopener">Herceg Novi</a>, where Ivo Andrić spent what he called his happiest years — his house there is a small museum, and his novel is the first book below.</p></div>
+    <div class="beat"><span class="t">11:30</span><p>The border. Monday is an ordinary working day in Montenegro — the holiday does not roll over — and a weekday morning is the gentlest slot of the week.</p></div>
+    <div class="beat"><span class="t">13:30</span><p>Into Dubrovnik. A late, light lunch, check in, lie down. We have earned a flat hour.</p></div>
+    <div class="beat"><span class="t">16:00</span><p>The <a href="https://citywallsdubrovnik.hr/" target="_blank" rel="noopener">city walls</a>, in the warm part of the afternoon, on a day with no cruise ship in port. Two kilometres, one way round (anticlockwise), one to two hours, about 1,190 steps. In May they close around half past six, so we go in by half past four. And if the legs are done after the drive, we skip them: we see the walls from the sea or from above at sunset anyway.</p></div>
+    <div class="beat"><span class="t">19:00</span><p>The sunset — Dubrovnik's is at 20:11, and the walls will be shut by then. Choose where we watch it, below.</p></div>
+    <div class="beat"><span class="t">20:45</span><p>Dinner at <a href="https://www.nautikarestaurants.com/restaurant-nautika/" target="_blank" rel="noopener">Nautika</a>, in the old maritime school by the Pile Gate, on a terrace facing the two floodlit fortresses. (Restaurant 360 would have been the other idea, but it is closed on Mondays.)</p></div>
     <div class="more">
-      <h4>IN KOTOR, IF WE GET UP EVEN EARLIER</h4>
+      <h4>IN KOTOR, IF WE HAVE TIME</h4>
       <ul class="todo">
-        <li><a href="https://en.wikipedia.org/wiki/Fortifications_of_Kotor" target="_blank" rel="noopener">The climb to San Giovanni fortress</a> <span class="tag">Popular</span>
-          <p>More than 1,300 steps up the cliff behind the town, about an hour and a half return, with the whole bay opening underneath you. Steep, uneven and genuinely a hike rather than a stroll — go at seven, before the sun hits the rock. Halfway up there is a small church, Our Lady of Remedy, which is a perfectly respectable place to stop and turn round.</p></li>
+        <li class="p"><img src="img/t/gospa-od-zdravlja.jpg" alt="" loading="lazy"><div><a href="https://en.wikipedia.org/wiki/Fortifications_of_Kotor" target="_blank" rel="noopener">The climb to San Giovanni fortress</a> <span class="tag">Popular</span>
+          <p>More than 1,300 steps up the cliff behind the town, about an hour and a half return, with the whole bay opening underneath you. Steep, uneven and genuinely a hike rather than a stroll — honestly, one for a morning without a border after it. Halfway up is a small church, Our Lady of Remedy, which is a perfectly respectable place to stop and turn round.</p></div></li>
         <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Maritime+Museum+of+Montenegro+Kotor" target="_blank" rel="noopener">The Maritime Museum</a> <span class="tag">Popular</span>
-          <p>In a baroque palace on the main square, about €4. Model ships, portraits, weapons, and the record of a town that lived entirely off the sea. Half an hour well spent before the ships arrive.</p></li>
-        <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Cats+Museum+Kotor" target="_blank" rel="noopener">The Cats Museum</a> <span class="tag q">Quieter</span>
-          <p>Yes, really. One euro, one room, near the Sea Gate, and the money goes to feeding the town's strays. It takes ten minutes and you will tell people about it afterwards.</p></li>
+          <p>In a baroque palace on the main square. Model ships, portraits, weapons, and the record of a town that lived entirely off the sea.</p></li>
+        <li class="p"><img src="img/t/kotor-cat.jpg" alt="" loading="lazy"><div><a href="https://www.google.com/maps/search/?api=1&amp;query=Cats+Museum+Kotor" target="_blank" rel="noopener">The Cats Museum</a> <span class="tag q">Quieter</span>
+          <p>Yes, really. One room near the Sea Gate, a euro or two, and the money goes to feeding the town's strays. It takes ten minutes and you will tell people about it afterwards.</p></div></li>
       </ul>
     </div>
 
     <p class="note"><b>Kotor runs on cats.</b> They are everywhere, they are fed by everyone, and there is a small museum devoted to them. The story goes that they came off the ships and were kept for the same reason ships kept them.</p>
+    <p class="note" style="margin-top:1.1rem"><b>Saved and broken in the same year.</b> Kotor went on UNESCO's World Heritage list in 1979 — the year an earthquake on 15 April wrecked much of it. It stayed on the list of sites in danger until 2003.</p>
+
+    <div class="choice">
+      <h4>Where do we watch the sun go down in Dubrovnik?</h4>
+      <p class="why">Three ways to be somewhere good at ten past eight, all finished in time for dinner.</p>
+      <div class="opts" data-q="Dubrovnik sunset">
+        <button class="opt pic" data-a="The Karaka sunset sail, 19:00"><img src="img/t/karaka.jpg" alt="" loading="lazy"><span><strong>From the sea, on the Karaka <span class="opt-tag">PICKED</span></strong><span>A <a href="https://karaka.info/excursions/panoramic-sunset-cruise-from-dubrovnik-2/" target="_blank" rel="noopener">replica of a 16th-century Dubrovnik merchant ship</a>, sailing at 19:00 for an hour and a quarter with a glass of sparkling wine — under the walls, with the sun going down at sea. About €45 each.</span></span></button>
+        <button class="opt pic" data-a="The cable car up Mount Srđ"><img src="img/t/srd-panorama.jpg" alt="" loading="lazy"><span><strong>From above, up Mount Srđ <span class="opt-tag">PICKED</span></strong><span>The <a href="https://www.dubrovnikcablecar.com/timetable-and-prices" target="_blank" rel="noopener">cable car</a> runs until late in May. Up at half past seven, the whole coast going orange beneath us, back down in four minutes for dinner. €30 return.</span></span></button>
+        <button class="opt pic" data-a="A drink at a Buža bar"><img src="img/t/buza-bar.jpg" alt="" loading="lazy"><span><strong>On the rocks, at a Buža <span class="opt-tag">PICKED</span></strong><span>Through a hole in the city wall to a bar on the cliff over the open sea. Plastic chairs, one drink, cash only, and the cheapest of the three.</span></span></button>
+      </div>
+    </div>
+
+    <div class="choice">
+      <h4>And where do we sleep in Dubrovnik?</h4>
+      <p class="why">One night only, so it matters where it is. Both are a few minutes from the walls.</p>
+      <div class="opts" data-q="Dubrovnik base">
+        <button class="opt pic" data-a="Inside the old town walls"><img src="img/t/old-port-night.jpg" alt="" loading="lazy"><span><strong>Inside the walls <span class="opt-tag">PICKED</span></strong><span>Car-free and genuinely magical once the day-trippers leave. But it is stepped, and rolling suitcases are discouraged on the stone.</span></span></button>
+        <button class="opt pic" data-a="Ploče, just east of the walls"><img src="img/t/banje-beach.jpg" alt="" loading="lazy"><span><strong>Ploče, just outside <span class="opt-tag">PICKED</span></strong><span>Hotels on the slope east of the old town, looking back at the walls and across to Lokrum. Flat arrival, easy taxis, better views — and you walk into town past the old quarantine buildings.</span></span></button>
+      </div>
+    </div>
   </div>
 </div>
 
 <div class="day">
   <figure><img src="img/dubrovnik-walls.jpg" alt="Dubrovnik's medieval walls above terracotta roofs and the sea" loading="lazy"></figure>
   <div class="day-body">
-    <div class="daymark"><span class="n">5</span><span class="when">TUESDAY 25 MAY · THE LAST DAY</span></div>
+    <div class="daymark"><span class="n">5</span><span class="when">TUESDAY 25 MAY · THE LAST DAY · HALF A DAY</span></div>
     <h3>One empty street, then home</h3>
-    <p class="intro">Dubrovnik was the <a href="https://en.wikipedia.org/wiki/Republic_of_Ragusa" target="_blank" rel="noopener">Republic of Ragusa</a> for six hundred years: a city-state barely bigger than a large village, which stayed independent between the Ottomans and the Venetians by being useful to both and threatening to neither. It had consulates across the Mediterranean, a merchant fleet to rival anyone's, and a horror of being conquered that you can see in the thickness of the walls. What you walk around today is essentially a diplomatic strategy built out of stone.</p>
-    <p class="intro"><b>And let us be honest about the time:</b> this is half a day, not a day. The flight leaves at 17:05, so we want to be at the airport by 15:15, which means leaving the old town around 14:30. Breakfast to lunch — enough for one proper thing, not two.</p>
-    <div class="beat"><span class="t">07:30</span><p>Coffee on the <a href="https://en.wikipedia.org/wiki/Stradun" target="_blank" rel="noopener">Stradun</a> before the day-trippers land. At that hour the limestone is still wet from being washed and the whole street is a mirror.</p></div>
-    <div class="beat"><span class="t">09:30</span><p>One thing, chosen below. Not two.</p></div>
-    <div class="beat"><span class="t">12:30</span><p>A long lunch. Either inside the walls, or at <a href="https://guide.michelin.com/en/dubrovnik-neretva/dubrovnik/restaurant/nautika" target="_blank" rel="noopener">Nautika</a> by the Pile Gate, in the old maritime school with Fort Lovrijenac across the water.</p></div>
-    <div class="beat"><span class="t">14:30</span><p>To the airport, about 25 minutes from the old town. 17:05 to Munich, into Amsterdam at 21:55.</p></div>
+    <p class="intro">Dubrovnik was the <a href="https://en.wikipedia.org/wiki/Republic_of_Ragusa" target="_blank" rel="noopener">Republic of Ragusa</a> for four and a half centuries: a city-state barely bigger than a large village, which stayed independent between the Ottomans and the Venetians by being useful to both and threatening to neither. It had consulates across the Mediterranean, a merchant fleet to rival anyone's, and a horror of being conquered that you can see in the thickness of the walls. What you walk around today is essentially a diplomatic strategy built out of stone.</p>
+    <p class="intro"><b>And let us be honest about the time:</b> this is half a day, not a day. The flight leaves at 17:05, so we want to be at the airport by 15:15. Two cruise ships are due at seven that morning, so the old town fills from about ten — early is ours, and then we go somewhere else.</p>
+    <div class="strip">
+      <figure><img src="img/gundulic-market.jpg" alt="Stalls of the morning market on Gundulić Square in Dubrovnik" loading="lazy"><figcaption>The morning market</figcaption></figure>
+      <figure><img src="img/lokrum-peacock.jpg" alt="A peacock among the ruins of the monastery on Lokrum" loading="lazy"><figcaption>Lokrum's peacocks</figcaption></figure>
+      <figure><img src="img/rectors-courtyard.jpg" alt="The arcaded courtyard of the Rector's Palace seen from the upper gallery" loading="lazy"><figcaption>The Rector's Palace</figcaption></figure>
+    </div>
+    <div class="beat"><span class="t">07:30</span><p>Coffee on the <a href="https://en.wikipedia.org/wiki/Stradun" target="_blank" rel="noopener">Stradun</a>, which at that hour is still wet from being washed. Behind the cathedral the <a href="https://experiencedubrovnik.com/en/dubrovnik/spomenici/gundulic-square" target="_blank" rel="noopener">morning market on Gundulić Square</a>: figs, lavender, and <i>arancini</i>, Dubrovnik's candied orange peel, to take home.</p></div>
+    <div class="beat"><span class="t">09:00</span><p>One thing, chosen below. Not two.</p></div>
+    <div class="beat"><span class="t">12:30</span><p>A long farewell lunch, chosen below too.</p></div>
+    <div class="beat"><span class="t">14:30</span><p>To the airport, about half an hour from the old town. 17:05 to Munich, into Amsterdam at 21:55.</p></div>
     <div class="more">
-      <h4>EVERYTHING ELSE DUBROVNIK HAS — FOR THE MORNING, OR FOR THAT FIFTH NIGHT</h4>
+      <h4>EVERYTHING ELSE DUBROVNIK HAS</h4>
       <ul class="todo">
-        <li><a href="https://www.lokrum.hr/en" target="_blank" rel="noopener">Lokrum island</a> <span class="tag">Popular</span>
-          <p>Fifteen minutes by boat from the old harbour. Botanical gardens planted by a Habsburg archduke, his peacocks still running loose, a small salt lake to swim in, and a ruined Benedictine monastery. Half a morning, comfortably.</p></li>
-        <li><a href="https://www.dubrovnikcablecar.com/" target="_blank" rel="noopener">The cable car up Mount Srđ</a> <span class="tag">Popular</span>
-          <p>Four minutes to 405 metres, and from the top the whole coast at once — the walls below, Lokrum, the Elafiti islands, the mountains of Bosnia behind. There is a small museum at the top about the 1991 siege.</p></li>
-        <li><a href="https://www.dumus.hr/" target="_blank" rel="noopener">The Rector's Palace</a> <span class="tag">Popular</span>
-          <p>Where the republic's elected rector lived during his term of office — which lasted exactly one month, deliberately, so that nobody could turn into a prince. Carved over the door: that private concerns are to be set aside at the entrance.</p></li>
-        <li><a href="https://en.wikipedia.org/wiki/Franciscan_friary,_Dubrovnik" target="_blank" rel="noopener">The Franciscan friary and its pharmacy</a> <span class="tag q">Quieter</span>
-          <p>The pharmacy opened in 1317 and has never closed since — one of the oldest working ones in Europe. The cloister beside it is the calmest place inside the walls, thirty seconds off the Stradun and almost always empty.</p></li>
+        <li class="p"><img src="img/t/lokrum-dead-sea.jpg" alt="" loading="lazy"><div><a href="https://www.lokrum.hr/" target="_blank" rel="noopener">Lokrum island</a> <span class="tag">Popular</span>
+          <p>Fifteen minutes by boat from the old harbour. Botanical gardens planted by a Habsburg archduke, his peacocks still running loose, a small salt lake called the Dead Sea, and a ruined Benedictine monastery. Richard the Lionheart is supposed to have been shipwrecked here in 1192, coming home from the Crusade.</p></div></li>
+        <li class="p"><img src="img/t/rectors-palace.jpg" alt="" loading="lazy"><div><a href="https://www.dumus.hr/en/opening-hours/" target="_blank" rel="noopener">The Rector's Palace</a> <span class="tag">Popular</span>
+          <p>Where the republic's elected rector lived during his term — which lasted exactly one month, deliberately, so that nobody could turn into a prince. Inside are the original bronze bell-strikers from the clock tower, and the bust of Miho Pracat, a shipowner and the only commoner the republic ever gave a statue.</p></div></li>
+        <li class="p"><img src="img/t/franciscan-cloister.jpg" alt="" loading="lazy"><div><a href="https://en.wikipedia.org/wiki/Franciscan_friary,_Dubrovnik" target="_blank" rel="noopener">The Franciscan friary and its pharmacy</a> <span class="tag q">Quieter</span>
+          <p>The pharmacy opened in 1317 and has never closed since — one of the oldest working ones in Europe. The cloister beside it is the calmest place inside the walls, thirty seconds off the Stradun.</p></div></li>
+        <li><a href="https://experiencedubrovnik.com/en/dubrovnik/religious-sites/dominikanski-samostan" target="_blank" rel="noopener">The Dominican monastery</a> <span class="tag q">Quieter</span>
+          <p>The other cloister, at the other end of town, begun in 1228 and built into the walls — a Gothic cloister and the best collection of the old Dubrovnik painters. Far fewer people than the Franciscans.</p></li>
+        <li><a href="https://en.wikipedia.org/wiki/Dubrovnik_Synagogue" target="_blank" rel="noopener">The synagogue on Žudioska street</a> <span class="tag q">Quieter</span>
+          <p>One of the oldest synagogues in Europe still in use, documented from the early 1400s, up a narrow lane off the Stradun that had a gate locked every night. Small, and up a flight of stairs.</p></li>
         <li><a href="https://www.warphotoltd.com/" target="_blank" rel="noopener">War Photo Limited</a> <span class="tag q">Quieter</span>
           <p>A serious photojournalism gallery with a permanent floor on the wars in the former Yugoslavia, including the shelling of this city in 1991. Not a light hour, but the right one if you want to understand what you are looking at.</p></li>
-        <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Buza+Bar+Dubrovnik" target="_blank" rel="noopener">The Buža bars</a> <span class="tag q">Quieter</span>
-          <p><i>Buža</i> means hole in the wall, and that is literally how you get in — through a gap in the city wall onto the cliffs on the seaward side. Plastic chairs, one drink, and a forty-metre drop to the Adriatic. Cash only.</p></li>
-        <li><a href="https://www.google.com/maps/search/?api=1&amp;query=Banje+Beach+Dubrovnik" target="_blank" rel="noopener">Banje beach</a> <span class="tag">Popular</span>
-          <p>Five minutes out of the Ploče gate. Pebbles, and the postcard view back at the old town. Busy by eleven, lovely at eight.</p></li>
-        <li><a href="https://www.tzdubrovnik.hr/lang/en/" target="_blank" rel="noopener">Sea kayaking round the walls</a> <span class="tag">Popular</span>
-          <p>About three hours, paddling under the walls and across to Lokrum, usually with a swim stop. The one way to see the city from the angle its enemies did.</p></li>
+        <li class="p"><img src="img/t/kayaks.jpg" alt="" loading="lazy"><div><a href="https://experiencedubrovnik.com/en" target="_blank" rel="noopener">Sea kayaking round the walls</a> <span class="tag">Popular</span>
+          <p>About three hours, paddling under the walls and across to Lokrum, usually with a swim stop. The one way to see the city from the angle its enemies did.</p></div></li>
       </ul>
     </div>
 
-    <p class="note"><b>A republic that ran on paperwork.</b> Ragusa — Dubrovnik's own name for itself for six hundred years — kept its independence by being useful to everyone and threatening to no one. It set up one of the first formal quarantines in Europe in 1377: thirty days on an island before you were allowed in, later forty, which is where the word comes from. It banned the slave trade in 1416. Above the gate of <a href="https://en.wikipedia.org/wiki/Fort_Lovrijenac" target="_blank" rel="noopener">Fort Lovrijenac</a> is still carved: <i>freedom is not to be sold for all the gold in the world</i>.</p>
+    <p class="note"><b>A republic that ran on paperwork.</b> Ragusa set up one of the first formal quarantines in Europe in 1377: thirty days on an island before you were allowed in, later forty, which is where the word comes from. It banned the slave trade in 1416. Its merchant ships were so well known in England that "a Ragusan" became the English word <a href="https://en.wikipedia.org/wiki/Argosy_(ship)" target="_blank" rel="noopener"><i>argosy</i></a> — Shakespeare's merchant of Venice has his money in them. Above the gate of <a href="https://en.wikipedia.org/wiki/Fort_Lovrijenac" target="_blank" rel="noopener">Fort Lovrijenac</a> is still carved: <i>freedom is not to be sold for all the gold in the world</i>.</p>
+    <p class="note" style="margin-top:1.1rem"><b>Measure yourself against a knight.</b> The stone knight on Orlando's Column, by the clock tower, was also the republic's ruler — in the measuring sense. His forearm, 51.2 cm, was the official length every cloth merchant had to use. The two bronze men who strike the bell above him are called Maro and Baro.</p>
 
     <div class="choice">
       <h4>Tuesday morning is yours. Which one?</h4>
-      <p class="why">Breakfast until about half past one, and then we have to go. One of these.</p>
+      <p class="why">From nine until lunch. One of these.</p>
       <div class="opts" data-q="Tuesday morning">
-        <button class="opt pic" data-a="Lokrum island — gardens and swimming"><img src="img/lokrum.jpg" alt="The rocky, wooded shoreline of Lokrum island" loading="lazy"><span><strong>Lokrum island <span class="opt-tag">PICKED</span></strong><span>Fifteen minutes by boat from the old harbour. Botanical gardens planted by a Habsburg archduke, his peacocks still running loose, and swimming off the rocks. Back in time for lunch.</span></span></button>
-        <button class="opt pic" data-a="A slow city morning — museums and the cable car"><img src="img/srd.jpg" alt="The cable car rising to Mount Srđ above Dubrovnik" loading="lazy"><span><strong>A slow city morning <span class="opt-tag">PICKED</span></strong><span>The Rector's Palace and the museums, or the <a href="https://www.dubrovnikcablecar.com/" target="_blank" rel="noopener">cable car</a> up Mount Srđ for the whole coast at once — the islands, the walls, and Bosnia behind us.</span></span></button>
+        <button class="opt pic" data-a="Lokrum island on the 9:00 boat"><img src="img/lokrum.jpg" alt="" loading="lazy"><span><strong>Lokrum island, on the first boat <span class="opt-tag">PICKED</span></strong><span>The 9:00 boat from the old harbour, back on the 11:15 or 11:45. Gardens, peacocks and the salt lake while the cruise passengers fill the Stradun. About €30 each, boat and entry together.</span></span></button>
+        <button class="opt pic" data-a="The Rector's Palace and a slow town morning"><img src="img/t/rectors-courtyard.jpg" alt="" loading="lazy"><span><strong>The Rector's Palace, at opening <span class="opt-tag">PICKED</span></strong><span>In at nine, before the ships' passengers reach it: the original Maro and Baro, the one-month rectors, Miho Pracat. Then the Franciscan cloister and a slow walk to lunch.</span></span></button>
       </div>
     </div>
 
     <div class="choice">
-      <h4>And where do we sleep in Dubrovnik on the Monday?</h4>
-      <p class="why">One night only, so it matters where it is. Both are a few minutes from the walls.</p>
-      <div class="opts" data-q="Dubrovnik base">
-        <button class="opt" data-a="Inside the old town walls"><strong>Inside the walls <span class="opt-tag">PICKED</span></strong><span>Car-free and genuinely magical once the day-trippers leave. But it is stepped, and rolling suitcases are discouraged on the stone.</span></button>
-        <button class="opt" data-a="Ploče, just east of the walls"><strong>Ploče, just outside <span class="opt-tag">PICKED</span></strong><span>Hotels on the slope east of the old town, looking back at the walls and across to Lokrum. Flat arrival, easy taxis, better views.</span></button>
+      <h4>And the last lunch?</h4>
+      <p class="why">Nautika only opens in the evening — which is why it is Monday's dinner. For lunch, one of these.</p>
+      <div class="opts" data-q="Farewell lunch">
+        <button class="opt pic" data-a="Dubravka 1836, by the Pile Gate"><img src="img/t/pile-gate.jpg" alt="" loading="lazy"><span><strong>Dubravka 1836, at the Pile Gate <span class="opt-tag">PICKED</span></strong><span><a href="https://www.nautikarestaurants.com/dubravka-restaurant-cafe/" target="_blank" rel="noopener">Nautika's sister</a>, under old plane trees just outside the gate, looking at the same two fortresses. Easy, unhurried, and two minutes from the taxis.</span></span></button>
+        <button class="opt pic" data-a="Bugenvila, in Cavtat"><img src="img/t/cavtat.jpg" alt="" loading="lazy"><span><strong>Bugenvila, in Cavtat <span class="opt-tag">PICKED</span></strong><span><a href="https://www.bugenvila.eu/" target="_blank" rel="noopener">A terrace under jasmine and bougainvillea</a> on a small harbour on the airport side of Dubrovnik. Cavtat is the old Roman town whose refugees founded Dubrovnik in the 7th century — so we would end the trip where the city began, a short drive from the plane.</span></span></button>
       </div>
     </div>
   </div>
@@ -609,7 +735,7 @@
     <div class="band">
       <figure>
         <img src="img/tryphon.jpg" alt="The twin bell towers of St Tryphon's cathedral in Kotor" loading="lazy">
-        <figcaption><b>St Tryphon, Kotor</b>Consecrated in 1166 and rebuilt after earthquakes, which is why its two bell towers do not match. Monday, 7:30am, with nobody in it.</figcaption>
+        <figcaption><b>St Tryphon, Kotor</b>Consecrated in 1166 and rebuilt after earthquakes, which is why its two bell towers do not match. Monday morning, with nobody in it.</figcaption>
       </figure>
       <figure>
         <img src="img/herceg-novi.jpg" alt="Herceg Novi rising in terraces above its harbour" loading="lazy">
@@ -617,12 +743,49 @@
       </figure>
       <figure>
         <img src="img/lovrijenac.jpg" alt="Fort Lovrijenac on its rock outside the walls of Dubrovnik" loading="lazy">
-        <figcaption><b>Fort Lovrijenac</b>Built on a rock outside the walls so that no garrison inside could ever turn it on the city. Our walls ticket covers it.</figcaption>
+        <figcaption><b>Fort Lovrijenac</b>Built on a rock outside the walls so that no garrison inside could ever turn it on the city. Our walls ticket covers it, and Monday's dinner looks straight at it, floodlit.</figcaption>
       </figure>
       <figure>
         <img src="img/stradun.jpg" alt="The Stradun, Dubrovnik's polished limestone main street" loading="lazy">
         <figcaption><b>The Stradun</b>An earthquake flattened Dubrovnik in 1667. What went back up followed one set of rules — same height, same stone, same shutters — so the whole street matches. Tuesday, 7:30am.</figcaption>
       </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── at the table ───────────── -->
+<section>
+  <div class="wrap">
+    <h2>At the table</h2>
+    <p class="lede">What to order on each side of the border, and four words that work in both. The two languages are close enough that a thank-you in one is a thank-you in the other.</p>
+    <div class="band">
+      <figure><img src="img/prsut.jpg" alt="A plate of thinly sliced Njeguši smoked ham" loading="lazy"><figcaption><b>Njeguški pršut</b>Smoked ham from the mountain village above Kotor. A protected name, like Parma.</figcaption></figure>
+      <figure><img src="img/buzara.jpg" alt="A pot of mussels cooked na buzaru" loading="lazy"><figcaption><b>Mussels na buzaru</b>From the bay itself, cooked in white wine and garlic. Bread for the juice.</figcaption></figure>
+      <figure><img src="img/black-risotto.jpg" alt="Black cuttlefish risotto on a plate" loading="lazy"><figcaption><b>Crni rižot</b>Black risotto, coloured with cuttlefish ink. On every coastal menu, and it will stain your teeth.</figcaption></figure>
+      <figure><img src="img/rozata.jpg" alt="Rožata, a caramel custard, with cream" loading="lazy"><figcaption><b>Rožata</b>Dubrovnik's crème caramel, flavoured with a rose liqueur. The way to end every meal there.</figcaption></figure>
+    </div>
+    <div class="cols">
+      <div>
+        <h3>Montenegro</h3>
+        <p><b>Peraška torta</b> — the Perast almond cake, with Maraschino and white wine. Our birthday cake.</p>
+        <p><b>Oysters</b> from the inner bay, raw with lemon.</p>
+        <p><b>Vranac</b> — the red you will see everywhere, Montenegro's own grape. <b>Krstač</b> — the old native white.</p>
+        <p><b>Kratošija</b> — ask for it by name. By DNA it is the same grape as California's <a href="https://en.wikipedia.org/wiki/Zinfandel" target="_blank" rel="noopener">Zinfandel</a> and Italy's Primitivo, and researchers think it may have started here. Vranac is its child.</p>
+      </div>
+      <div>
+        <h3>Dubrovnik</h3>
+        <p><b>Ston oysters</b> — flat oysters from Mali Ston bay, an hour north, with EU-protected status since 2020.</p>
+        <p><b>Šporki makaruli</b> — "dirty macaroni", pasta with a slow meat ragù. A Dubrovnik classic.</p>
+        <p><b>Arancini</b> (candied orange peel) and <b>kotonjata</b>, a firm quince paste — goiabada, but made with quince.</p>
+        <p><b>Malvasija Dubrovačka</b> — the city's own white grape, grown in the Konavle valley by the airport. <b>Plavac Mali</b> from <a href="https://en.wikipedia.org/wiki/Dinga%C4%8D" target="_blank" rel="noopener">Dingač</a> — a big red from Croatia's first protected wine region, 1961.</p>
+      </div>
+      <div>
+        <h3>Four words</h3>
+        <p><b>Hvala</b> — thank you.</p>
+        <p><b>Dobar dan</b> — good day.</p>
+        <p><b>Molim</b> — please, and you're welcome.</p>
+        <p><b>Živjeli!</b> — cheers. For the wedding, and for the cake.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -633,14 +796,14 @@
     <h2>What we are leaving for next time</h2>
     <div class="cols">
       <div>
-        <img src="img/njegos.jpg" alt="The Njegoš mausoleum on the summit ridge of Lovćen, above cloud" loading="lazy" style="margin-bottom:1rem">
+        <img src="img/njegos.jpg" alt="The Njegoš mausoleum on the summit ridge of Lovćen, above cloud" loading="lazy" style="margin-bottom:1rem;width:100%;height:240px;object-fit:cover">
         <h3>Twenty-five hairpins and a poet on a summit</h3>
         <p>The old road out of Kotor climbs twenty-five numbered hairpin bends to <a href="https://en.wikipedia.org/wiki/Njegu%C5%A1i" target="_blank" rel="noopener">Njeguši</a> — a village known for smoked ham and mountain cheese, and as the birthplace of <a href="https://en.wikipedia.org/wiki/Petar_II_Petrovi%C4%87-Njego%C5%A1" target="_blank" rel="noopener">Njegoš</a> — and then into <a href="https://www.nparkovi.me/" target="_blank" rel="noopener">Lovćen National Park</a>. At 1,657 m, at the top of 461 steps, is his mausoleum: granite caryatids, a vast view over the bay on one side and the mountains on the other. He was a prince-bishop, a poet, and by all accounts about 1.9 m tall.</p>
-        <p>Down the far side is <a href="https://en.wikipedia.org/wiki/Cetinje" target="_blank" rel="noopener">Cetinje</a>, the old royal capital — a town of a few thousand people that once had the embassies of Russia, Britain, France and Austria-Hungary on one street. The buildings are still there.</p>
-        <p class="note" style="border-left-color:#4A6A72;color:#A9C3BC">This needs a whole day, and at four nights we do not have one to give. It is the first thing I would add if the fifth night comes through — or the reason to come back.</p>
+        <p>Down the far side is <a href="https://en.wikipedia.org/wiki/Cetinje" target="_blank" rel="noopener">Cetinje</a>, the old royal capital — a town of about twelve thousand people that once had the embassies of Russia, Britain, France and Austria-Hungary on one street. The buildings are still there.</p>
+        <p class="note" style="border-left-color:#4A6A72;color:#A9C3BC">This needs a whole day, and at four nights we do not have one to give. It is the reason to come back.</p>
       </div>
       <div>
-        <img src="img/cetinje.jpg" alt="A former embassy building in Cetinje, Montenegro's old royal capital" loading="lazy" style="margin-bottom:1rem">
+        <img src="img/ston.jpg" alt="Ston from the air, its medieval walls running up the hill behind the town" loading="lazy" style="margin-bottom:1rem;width:100%;height:240px;object-fit:cover">
         <h3>And the oysters at Ston</h3>
         <p>An hour north of Dubrovnik, <a href="https://en.wikipedia.org/wiki/Walls_of_Ston" target="_blank" rel="noopener">five kilometres of medieval wall</a> built to guard the salt pans that paid for the republic, and oysters pulled out of Mali Ston bay, farmed there since Roman times. A half-day trip, about five hours — so it needs a free day too.</p>
         <h3 style="margin-top:1.6rem">And further out</h3>
@@ -654,7 +817,7 @@
 <section class="shade" id="choices">
   <div class="wrap">
     <h2>What we have chosen</h2>
-    <p class="lede">Tap the options you like anywhere on this page and they collect here. Say who you are first, then send me your picks when you have been through it.</p>
+    <p class="lede">Tap the options you like anywhere on this page and they collect here. When you have been through them, press send — nothing reaches me until you do.</p>
 
     <div class="who">
       <span>I am</span>
@@ -664,6 +827,9 @@
     </div>
 
     <ul class="summary-list" id="summary"></ul>
+
+    <label class="wish" for="wish">And one thing you would love to do, that is not on this page <span>(optional)</span></label>
+    <textarea id="wish" class="wish-box" rows="3" placeholder="Anything at all"></textarea>
 
     <div class="who" style="margin-top:1.8rem">
       <button class="btn solid" id="send">Send my picks on WhatsApp</button>
@@ -681,20 +847,26 @@
     <h2>The practical half</h2>
     <div class="cols">
       <div>
-        <h3>Your passport, specifically</h3>
-        <p>A Brazilian passport needs no visa for a short stay in either country, but it has to be less than ten years old and still valid for three months after 26 May 2027. Worth checking the date this week rather than in April.</p>
-        <p>Entering Croatia you will be registered under the EU's new <a href="https://travel-europe.europa.eu/ees_en" target="_blank" rel="noopener">EES</a> system — passport, four fingerprints and a photo, done at the booth. They no longer stamp passports. ETIAS, the €20 online permit, was still not running as of October 2026 and is expected some time in 2027 with a six-month grace period. I will check <a href="https://travel-europe.europa.eu/en/etias" target="_blank" rel="noopener">the official site</a> in January and tell you if anything is needed.</p>
+        <h3>Your passport and papers</h3>
+        <p>A Brazilian passport needs no visa for a short stay in either country. For Europe's Schengen area it has to be less than ten years old when you arrive, and still valid three months after you finally fly back to Brazil — so it is worth checking the date now, not in April.</p>
+        <p>You are registered in the EU's new <a href="https://travel-europe.europa.eu/ees_en" target="_blank" rel="noopener">EES</a> system — passport, fingerprints and a photo — when you first land at Schiphol from Brazil; at the Croatian border on the Monday they just check you against it. The days in Montenegro do not count towards your 90 days in Schengen.</p>
+        <p>ETIAS, the €20 online permit, was still not running in October 2026. If it starts before May, you would need it for the whole European part of your trip, the Netherlands included. I will check <a href="https://travel-europe.europa.eu/en/etias" target="_blank" rel="noopener">the official site</a> in January and tell you. And make sure your travel insurance covers Montenegro, which is not in the EU.</p>
+      </div>
+      <div>
+        <h3>Your phone</h3>
+        <p>Montenegro is not part of Europe's free roaming yet, and a Brazilian SIM would be expensive anywhere here. The simplest answer is Crnogorski Telekom's <a href="https://telekom.me/privatni-korisnici/turist/en" target="_blank" rel="noopener">tourist eSIM</a>: €15 for 15 days, bought online, and its data also works in Croatia, so one purchase covers the whole trip. Your phone has to support eSIM; keep the Brazilian line in for WhatsApp.</p>
+        <p>The emergency number in both countries is 112.</p>
+        <h3 style="margin-top:1.5rem">Money</h3>
+        <p>Both countries use the euro, which makes this simpler than it has any right to be. Cards work nearly everywhere — bring one for the walls. The Buža bars and the Cats Museum want cash. Carry €20 in notes and coins.</p>
+        <p>One trick: for the walls, the one-day <a href="https://www.dubrovnikpass.com/" target="_blank" rel="noopener">Dubrovnik Pass</a> cost the same as a walls ticket in 2026 (€40), and it runs for 24 hours from when we first use it — so Monday afternoon's walls also get us into the Rector's Palace on Tuesday morning.</p>
       </div>
       <div>
         <h3>Late May weather</h3>
         <p>Around 23 °C in the day, 15 °C at night, sea about 18–19 °C. Green, not yet hot, and showers are possible — a little more often inside the bay, where the mountains catch the cloud.</p>
-        <h3 style="margin-top:1.5rem">Money</h3>
-        <p>Both countries use the euro, which makes this simpler than it has any right to be. Cards work nearly everywhere. The Dubrovnik walls are card-only; the Buža bars and the Cats Museum are cash-only. Carry €20 in notes and coins.</p>
-      </div>
-      <div>
-        <h3>What to bring</h3>
-        <p>Shoes with grip above everything else — polished limestone is genuinely slippery, and the walls alone are 1,190 steps. A light jacket for evenings on the water. A hat: there is no shade at all up on the walls. Swimsuit, in case you are brave. The wedding outfit. A contactless card.</p>
-        <p>Not a rolling suitcase, if we end up sleeping inside Dubrovnik's walls — the old town is stepped, car-free, and wheels on that stone are discouraged.</p>
+        <h3 style="margin-top:1.5rem">If it rains</h3>
+        <p>Sunday becomes the long lunch, the island church and the Perast Museum, all of them indoors. In Dubrovnik the Lokrum boat does not sail in bad weather, so Tuesday becomes the Rector's Palace and the two cloisters, and Monday's sunset moves to a window seat.</p>
+        <h3 style="margin-top:1.5rem">What to bring</h3>
+        <p>Shoes with grip above everything else — polished limestone is genuinely slippery, and the walls alone are 1,190 steps. A light jacket for evenings on the water. A hat: there is no shade up on the walls. Swimsuit, in case you are brave. The wedding outfit. Not a rolling suitcase if we sleep inside Dubrovnik's walls — the old town is stepped and car-free.</p>
       </div>
     </div>
 
@@ -703,8 +875,8 @@
         <caption>Where we sleep, and what is still open</caption>
         <thead><tr><th>Nights</th><th>Where</th><th>Status</th></tr></thead>
         <tbody>
-          <tr><td>Fri 21 + Sat 22</td><td>The wedding coast</td><td>Hosted — thank you, bride</td></tr>
-          <tr><td>Sun 23</td><td>Perast, or Huma at Dobrota</td><td>Your choice above. Book first: it is the scarcest night of the trip</td></tr>
+          <tr><td>Fri 21 + Sat 22</td><td>The wedding coast</td><td>The bride's guests — thank you</td></tr>
+          <tr><td>Sun 23</td><td>Perast, or Huma at Dobrota</td><td>Your choice above. Booked first: it is the scarcest night of the trip</td></tr>
           <tr><td>Mon 24</td><td>Dubrovnik — inside the walls, or Ploče</td><td>Your choice above. One night only</td></tr>
         </tbody>
       </table>
@@ -712,31 +884,45 @@
   </div>
 </section>
 
-<!-- ───────────── books ───────────── -->
+<!-- ───────────── before we go ───────────── -->
 <section class="shade">
   <div class="wrap">
-    <h2>Three books, if you want a head start</h2>
-    <p class="lede">All in English, all available in Brazil, and all about this exact coast. The first one is the reason we stop in Herceg Novi.</p>
+    <h2>Before we go: two books and three films</h2>
+    <p class="lede">For the armchair in Belo Horizonte. The first book is the reason we stop in Herceg Novi.</p>
     <div class="books">
       <div class="book">
         <span class="yr">1945</span>
         <div>
           <h3><a href="https://en.wikipedia.org/wiki/The_Bridge_on_the_Drina" target="_blank" rel="noopener">The Bridge on the Drina</a> — Ivo Andrić</h3>
-          <p>Four centuries of one Bosnian town, told entirely through the stone bridge at its centre. It won him the Nobel Prize in 1961. We pass his house on the Monday.</p>
+          <p>Four centuries of one Bosnian town, told entirely through the stone bridge at its centre. It is set inland, not on this coast, but it is the book Andrić is loved for, and he won the Nobel Prize in 1961. It is in Portuguese: <a href="https://www.martinsfontespaulista.com.br/ponte-sobre-o-drina-911688/p" target="_blank" rel="noopener"><i>Ponte sobre o Drina</i></a>, Grua Livros, 2020, translated straight from Serbian. We pass his house on the Monday.</p>
         </div>
       </div>
       <div class="book">
         <span class="yr">1941</span>
         <div>
           <h3><a href="https://en.wikipedia.org/wiki/Black_Lamb_and_Grey_Falcon" target="_blank" rel="noopener">Black Lamb and Grey Falcon</a> — Rebecca West</h3>
-          <p>The great travel book about this part of the world, written on the edge of the war that ended it. It is enormous — read the Dalmatia and Montenegro chapters and leave the rest.</p>
+          <p>The great travel book about this part of the world, written on the edge of the war that ended it. In English, or in Spanish as <i>Cordero negro y halcón gris</i>. It is enormous — read the Dalmatia and Montenegro chapters and leave the rest.</p>
         </div>
       </div>
       <div class="book">
-        <span class="yr">1847</span>
+        <span class="yr">2011–</span>
         <div>
-          <h3><a href="https://en.wikipedia.org/wiki/The_Mountain_Wreath" target="_blank" rel="noopener">The Mountain Wreath</a> — Petar II Petrović Njegoš</h3>
-          <p>Montenegro's national epic, by the poet-prince buried on Lovćen. Short, strange, and much better if we end up taking the mountain day.</p>
+          <h3><a href="https://experiencedubrovnik.com/en/dubrovnik-for/got-fans" target="_blank" rel="noopener">Game of Thrones</a></h3>
+          <p>Dubrovnik played King's Landing. Fort Lovrijenac was the Red Keep, Gradac Park hosted the poisoned wedding, and the Jesuit staircase is where the queen does her walk of shame. Any episode will do; you will recognise the walls.</p>
+        </div>
+      </div>
+      <div class="book">
+        <span class="yr">2017</span>
+        <div>
+          <h3><a href="https://filmingincroatia.hr/movies/star-wars-the-last-jedi/" target="_blank" rel="noopener">Star Wars: The Last Jedi</a></h3>
+          <p>In March 2016 a spaceship landed in the middle of the Stradun: the old town became the casino city of Canto Bight. We will drink our coffee on the landing pad.</p>
+        </div>
+      </div>
+      <div class="book">
+        <span class="yr">2006</span>
+        <div>
+          <h3><a href="https://en.wikipedia.org/wiki/Casino_Royale_(2006_film)" target="_blank" rel="noopener">Casino Royale</a></h3>
+          <p>Bond goes to Montenegro to play poker — and none of it was filmed there. The "Montenegro" is Karlovy Vary, in the Czech Republic. Watch it, then come and see the real one.</p>
         </div>
       </div>
     </div>
@@ -746,8 +932,8 @@
 <footer>
   <div class="wrap">
     <h3>About this page</h3>
-    <p>Built in October 2026 for a trip in May 2027, and rebuilt on the 22nd once we settled on four nights. Every link on this page was opened and checked on 22 October 2026, and they all open in a new tab. Times, prices and opening hours will need checking again before anything is booked — I will keep this page updated as we decide things, so it is worth coming back to it rather than keeping a copy.</p>
-    <p>Flight times and fares: Google Flights, checked 22 October 2026, per person one way. Border waits: <a href="https://www.navigate-dubrovnik.com/border-crossing-updates" target="_blank" rel="noopener">Navigate Dubrovnik</a>. Transfer prices: <a href="https://easybalkantransfers.com/transfers/tivat-to-dubrovnik-private-transfer/" target="_blank" rel="noopener">Easy Balkan Transfers</a>. General practical information: the <a href="https://www.tzdubrovnik.hr/lang/en/" target="_blank" rel="noopener">Dubrovnik tourist board</a> and <a href="https://www.montenegro.travel/" target="_blank" rel="noopener">Montenegro's national tourism office</a>. Where a restaurant or a small museum has no website of its own, the link goes to its place on the map.</p>
+    <p>Built in October 2026 for a trip in May 2027. <b>Updated 23 October:</b> a map, many more photographs, a rebuilt Sunday and Monday, and the answers to a second round of checking — Restaurant 360 is closed on Mondays, Nautika only opens in the evening, and the sun leaves Perast at about ten past seven. Every link on this page was checked on 23 October 2026, and they all open in a new tab. Times, prices and opening hours will be checked again before anything is booked, and I will keep this page updated as we decide things, so it is worth coming back to it.</p>
+    <p>Flight times and fares: Google Flights, checked 22 October 2026, per person one way. Cruise calendars: the ports' and cruise listings as of 23 October 2026. Sun and shade: sunset tables, and the mountain line worked out from terrain data, so give or take ten minutes. Roads on the map: OpenStreetMap. Border waits: <a href="https://www.navigate-dubrovnik.com/border-crossing-updates" target="_blank" rel="noopener">Navigate Dubrovnik</a>. Transfer prices: <a href="https://easybalkantransfers.com/transfers/tivat-to-dubrovnik-private-transfer/" target="_blank" rel="noopener">Easy Balkan Transfers</a>. General practical information: the <a href="https://experiencedubrovnik.com/en" target="_blank" rel="noopener">Dubrovnik tourist board</a> and <a href="https://www.montenegro.travel/" target="_blank" rel="noopener">Montenegro's national tourism office</a>. Where a restaurant or a small museum has no website of its own, the link goes to its place on the map.</p>
 
     <h3 style="margin-top:2rem">Photographs</h3>
     <p style="max-width:42rem">All from Wikimedia Commons, reused under their licences. In order of appearance:</p>
@@ -764,27 +950,30 @@
     <span><b id="tally-n">0</b> of <span id="tally-t">4</span> chosen<span id="tally-who"></span></span>
     <span class="grow"></span>
     <a href="#choices" class="btn ghost" style="text-decoration:none">See them all</a>
-    <button class="btn solid" id="tally-send">Send to Helena</button>
+    <button class="btn solid" id="tally-send">Send my picks</button>
   </div>
 </div>
 
 <script>
 (function(){
   "use strict";
-  var KEY = "adriatic27.picks", WHOKEY = "adriatic27.who";
+  var KEY = "adriatic27.picks", WHOKEY = "adriatic27.who", WISHKEY = "adriatic27.wish";
+  var wish = document.getElementById("wish");
   var WHATSAPP = "";           // set to a number (digits only, with country code) to address the message
   var store = {}, who = "";
 
   function load(){
     try{
       store = JSON.parse(localStorage.getItem(KEY) || "{}") || {};
-      who = localStorage.getItem(WHOKEY) || "";
-    }catch(e){ store = {}; who = ""; }
+      who = localStorage.getItem(WHOKEY) || "Pai";
+      wish.value = localStorage.getItem(WISHKEY) || "";
+    }catch(e){ store = {}; who = "Pai"; }
   }
   function save(){
     try{
       localStorage.setItem(KEY, JSON.stringify(store));
       localStorage.setItem(WHOKEY, who);
+      localStorage.setItem(WISHKEY, wish.value);
     }catch(e){ /* private browsing — picks just won't persist */ }
   }
 
@@ -839,11 +1028,12 @@
   });
 
   function message(){
-    var lines = [(who || "Someone") + "'s picks for the Adriatic, 21–26 May 2027:", ""];
+    var lines = [(who || "Someone") + "'s picks for the Adriatic, 21–25 May 2027:", ""];
     groups.forEach(function(g){
       var a = store[g.dataset.q];
       if(a) lines.push("• " + g.dataset.q + ": " + a);
     });
+    if(wish.value.trim()){ lines.push("", "One thing I would love: " + wish.value.trim()); }
     var missing = groups.filter(function(g){ return !store[g.dataset.q]; });
     if(missing.length){
       lines.push("", "Still undecided: " + missing.map(function(g){ return g.dataset.q; }).join(", "));
@@ -873,7 +1063,7 @@
   });
 
   document.getElementById("reset").addEventListener("click", function(){
-    store = {}; save(); paint(); say("Cleared.");
+    store = {}; wish.value = ""; save(); paint(); say("Cleared.");
   });
 
   // photo credits, from the same file the download script wrote
@@ -894,8 +1084,107 @@
       "Wikimedia Commons contributors, under CC BY, CC BY-SA and public domain licences.";
   });
 
+  wish.addEventListener("input", save);
+
+  // days to go, in the hero
+  (function(){
+    var el = document.getElementById("countdown"); if(!el) return;
+    var now = new Date(), start = new Date(2027, 4, 21), end = new Date(2027, 4, 26);
+    var days = Math.ceil((start - now) / 864e5);
+    el.textContent = days > 1 ? " · " + days + " DAYS TO GO" : days === 1 ? " · TOMORROW" : now < end ? " · WE ARE HERE" : "";
+  })();
+
   load(); paint();
 })();
+</script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
+<script>
+/* the map — roads from OpenStreetMap via OSRM, simplified; drawn once the section scrolls near.
+   Leaflet is deferred, so it has run by DOMContentLoaded. */
+document.addEventListener("DOMContentLoaded", function(){
+  "use strict";
+  var el = document.getElementById("map");
+  if(!el || !window.L) return;
+
+  var GM = "https://www.google.com/maps/search/?api=1&query=";
+  var DAY = {1:"#35766B", 3:"#B4852F", 4:"#9C4A33", 5:"#102C36"};
+  var ROUTE = {
+    1:[[42.4047,18.7263],[42.3954,18.7371],[42.3918,18.7375],[42.392,18.7382],[42.3928,18.7373],[42.3955,18.7371],[42.4091,18.7216],[42.4125,18.7192],[42.4179,18.7171],[42.4199,18.7156],[42.4217,18.7129],[42.4246,18.7059],[42.4265,18.704],[42.4299,18.7022],[42.4318,18.699],[42.4348,18.6992],[42.4358,18.6986],[42.4373,18.6963],[42.436,18.6907],[42.4338,18.6912]],
+    3:[[42.4338,18.6912],[42.436,18.6907],[42.4363,18.694],[42.4373,18.6963],[42.4382,18.6962],[42.4392,18.6939],[42.4429,18.6896],[42.4466,18.6881],[42.4504,18.6851],[42.4542,18.6838],[42.4562,18.6816],[42.4589,18.6816],[42.4608,18.6835],[42.4622,18.6827],[42.4642,18.6836],[42.4657,18.6864],[42.4656,18.6866],[42.4663,18.685],[42.4661,18.675],[42.4667,18.6741],[42.4675,18.673],[42.4671,18.6748],[42.4705,18.6779],[42.4713,18.6803],[42.4737,18.681],[42.479,18.6863],[42.4842,18.6743],[42.4847,18.6714],[42.4864,18.6672],[42.4873,18.6615],[42.487,18.6521],[42.4897,18.649],[42.4909,18.6502],[42.4919,18.6502],[42.4935,18.6518],[42.4945,18.652],[42.497,18.658],[42.5005,18.6613],[42.501,18.6634],[42.5046,18.6679],[42.5053,18.6725],[42.5048,18.6749],[42.5054,18.6765],[42.5077,18.6772],[42.5093,18.6788],[42.5105,18.6787],[42.512,18.6813],[42.5132,18.6814],[42.5153,18.6829],[42.5171,18.6874],[42.5172,18.6896],[42.5166,18.6922],[42.5155,18.6936],[42.5098,18.6967],[42.5074,18.6956],[42.506,18.6937],[42.5034,18.6944],[42.5021,18.6921],[42.5004,18.6927],[42.4959,18.691],[42.4923,18.6916],[42.4898,18.6933],[42.4866,18.7005],[42.4866,18.699]],
+    4:[[42.4866,18.699],[42.4864,18.7027],[42.4847,18.705],[42.484,18.7085],[42.4837,18.7156],[42.4846,18.7295],[42.4835,18.733],[42.4857,18.7429],[42.4881,18.75],[42.4903,18.7538],[42.4899,18.7555],[42.4906,18.7577],[42.4905,18.7625],[42.49,18.7638],[42.4883,18.7652],[42.4867,18.7656],[42.4861,18.7669],[42.4837,18.7654],[42.4813,18.7644],[42.48,18.7646],[42.4781,18.7635],[42.476,18.7648],[42.4732,18.7647],[42.4721,18.764],[42.4699,18.765],[42.4657,18.7645],[42.4606,18.7651],[42.4554,18.7668],[42.4529,18.7657],[42.4513,18.7661],[42.4501,18.7654],[42.4479,18.7665],[42.4439,18.7654],[42.4422,18.763],[42.4413,18.7628],[42.4397,18.7636],[42.4388,18.7654],[42.4328,18.7692],[42.429,18.7694],[42.4254,18.7684],[42.424,18.7702],[42.4232,18.7712],[42.4223,18.7713],[42.4217,18.7699],[42.4201,18.7697],[42.4179,18.7677],[42.4176,18.7659],[42.4122,18.7638],[42.3949,18.7442],[42.3922,18.738],[42.3928,18.7373],[42.3945,18.7375],[42.3957,18.7369],[42.4091,18.7216],[42.4125,18.7192],[42.4179,18.7171],[42.4199,18.7156],[42.4253,18.705],[42.4299,18.7022],[42.432,18.6988],[42.4356,18.6988],[42.4369,18.6966],[42.4385,18.6959],[42.4392,18.6939],[42.4433,18.6892],[42.4466,18.6881],[42.4504,18.6851],[42.4542,18.6838],[42.4562,18.6816],[42.4589,18.6816],[42.4608,18.6835],[42.4622,18.6827],[42.4642,18.6836],[42.4657,18.6864],[42.4656,18.6866],[42.4663,18.685],[42.4661,18.675],[42.4667,18.6741],[42.4675,18.673],[42.467,18.6746],[42.4661,18.6734],[42.4625,18.6729],[42.4605,18.6753],[42.4596,18.6752],[42.4594,18.6717],[42.4576,18.6679],[42.4571,18.6619],[42.4551,18.6559],[42.4489,18.6443],[42.4465,18.6419],[42.444,18.6373],[42.4433,18.6282],[42.4404,18.6206],[42.4405,18.6162],[42.4394,18.6136],[42.4391,18.6105],[42.4373,18.6086],[42.4387,18.6059],[42.4379,18.5987],[42.4386,18.5961],[42.4384,18.5937],[42.4406,18.5854],[42.4432,18.5835],[42.4438,18.5801],[42.4447,18.5783],[42.4511,18.5727],[42.4557,18.5662],[42.4547,18.5557],[42.4556,18.5512],[42.4538,18.5447],[42.4541,18.5421],[42.453,18.5379],[42.4531,18.5345],[42.4549,18.5308],[42.4559,18.5276],[42.4587,18.5265],[42.4588,18.5219],[42.462,18.52],[42.4609,18.5157],[42.4623,18.5129],[42.4614,18.5087],[42.4594,18.5077],[42.4557,18.5041],[42.4552,18.4976],[42.4567,18.495],[42.4571,18.4922],[42.4622,18.4861],[42.4701,18.4807],[42.472,18.4782],[42.4744,18.473],[42.4763,18.4649],[42.4795,18.4586],[42.4811,18.457],[42.4819,18.4491],[42.4836,18.4458],[42.4859,18.4386],[42.4912,18.4333],[42.4955,18.4242],[42.4971,18.423],[42.5037,18.4141],[42.5062,18.4064],[42.5058,18.4031],[42.5065,18.3984],[42.51,18.3893],[42.5104,18.3863],[42.5158,18.3728],[42.5178,18.3651],[42.5173,18.3591],[42.5181,18.3549],[42.5241,18.3407],[42.5286,18.334],[42.5348,18.3209],[42.5417,18.3108],[42.546,18.3],[42.5485,18.2962],[42.5528,18.2763],[42.5576,18.2674],[42.5592,18.26],[42.5634,18.251],[42.5649,18.2462],[42.5667,18.2449],[42.5702,18.2453],[42.5737,18.2408],[42.5771,18.2388],[42.5797,18.2358],[42.5838,18.2342],[42.589,18.23],[42.5934,18.23],[42.5954,18.231],[42.5975,18.2309],[42.5993,18.2329],[42.6023,18.2315],[42.605,18.2328],[42.6067,18.2326],[42.6098,18.2285],[42.6133,18.2259],[42.6147,18.2224],[42.6152,18.219],[42.6173,18.2156],[42.6188,18.2146],[42.6202,18.2124],[42.6219,18.212],[42.6245,18.2098],[42.6248,18.2082],[42.6239,18.2045],[42.6255,18.2006],[42.6252,18.1944],[42.623,18.1862],[42.6225,18.178],[42.6252,18.1748],[42.6272,18.1709],[42.6302,18.1517],[42.6321,18.1445],[42.6336,18.1417],[42.6334,18.1374],[42.6374,18.1341],[42.6383,18.1317],[42.6411,18.1279],[42.6419,18.1234],[42.6443,18.1175],[42.6465,18.1016],[42.6436,18.1071],[42.6431,18.1107],[42.6425,18.1103],[42.6432,18.1082],[42.642,18.1065]],
+    5:[[42.642,18.1065],[42.6464,18.0953],[42.6471,18.0949],[42.6473,18.0971],[42.6479,18.098],[42.6465,18.1014],[42.6443,18.1175],[42.6419,18.1234],[42.6411,18.1279],[42.6383,18.1317],[42.6374,18.1341],[42.6334,18.1374],[42.6336,18.1417],[42.6321,18.1445],[42.6302,18.1517],[42.6272,18.1709],[42.6252,18.1748],[42.6225,18.178],[42.623,18.1859],[42.6252,18.1944],[42.6255,18.2006],[42.6239,18.2045],[42.6248,18.2082],[42.6245,18.2098],[42.6219,18.212],[42.6202,18.2124],[42.6188,18.2146],[42.6173,18.2156],[42.6152,18.219],[42.6147,18.2224],[42.6133,18.2259],[42.6098,18.2285],[42.6067,18.2326],[42.605,18.2328],[42.6023,18.2315],[42.5993,18.2329],[42.5975,18.2309],[42.5954,18.231],[42.5934,18.23],[42.589,18.23],[42.5838,18.2342],[42.5797,18.2358],[42.5771,18.2388],[42.5737,18.2408],[42.5702,18.2453],[42.5667,18.2449],[42.5654,18.2455],[42.5592,18.2601],[42.5591,18.2636],[42.5604,18.2612]]
+  };
+  /* d = day number on the pin; o = an option rather than a plan */
+  var PINS = [
+    {d:1, ll:[42.4037,18.7248], t:"Tivat airport", w:"FRI 21 · 14:35", x:"We land. Fifteen minutes to anywhere on this side of the bay.", q:"Tivat Airport"},
+    {d:1, ll:[42.4336,18.6902], t:"Porto Montenegro", w:"FRI 21 · EVENING", x:"The old navy yard, now a marina: a flat, lit walk, and the submarine museum.", q:"Porto Montenegro Tivat"},
+    {d:3, ll:[42.4664,18.6800], t:"The Kamenari–Lepetane ferry", w:"SUN 23 · LATE MORNING", x:"Ten minutes on the water across the Verige strait, the narrowest point of the bay.", q:"Kamenari Lepetane ferry"},
+    {d:3, ll:[42.4863,18.6989], t:"Perast", w:"SUN 23 · NIGHT 3 · MY BIRTHDAY", x:"One street of stone palaces. We sleep here.", q:"Perast Montenegro"},
+    {d:3, ll:[42.4869,18.6886], t:"Our Lady of the Rocks", w:"SUN 23 · AFTERNOON", x:"The island the sailors built, a few minutes by boat from the Perast quay.", q:"Our Lady of the Rocks Perast"},
+    {o:3, ll:[42.4866,18.6491], t:"Konoba Ćatovića Mlini, Morinj", w:"SUN 23 · A DINNER OPTION", x:"The old watermill restaurant, fifteen minutes round the bay.", q:"Konoba Catovica Mlini Morinj"},
+    {o:3, ll:[42.4479,18.7662], t:"Huma Kotor Bay, Dobrota", w:"SUN 23 · A BED OPTION", x:"The splurge: pools facing the water.", q:"Huma Kotor Bay Hotel Dobrota"},
+    {d:4, ll:[42.4247,18.7697], t:"Kotor, the Sea Gate", w:"MON 24 · 07:30", x:"In through the gate before the town fills up.", q:"Sea Gate Kotor"},
+    {d:4, ll:[42.4518,18.5368], t:"Herceg Novi", w:"MON 24 · COFFEE", x:"Where Ivo Andrić spent his happiest years. Our coffee stop.", q:"Herceg Novi Old Town"},
+    {d:4, ll:[42.4858,18.4448], t:"The border", w:"MON 24 · LATE MORNING", x:"Debeli Brijeg into Karasovići: out of Montenegro, into Croatia and Schengen.", q:"Debeli Brijeg border crossing"},
+    {d:4, ll:[42.6416,18.1080], t:"Dubrovnik", w:"MON 24 · NIGHT 4", x:"The walls in the afternoon, the sunset, dinner, and one night.", q:"Dubrovnik Old Town"},
+    {o:5, ll:[42.6276,18.1207], t:"Lokrum", w:"TUE 25 · A MORNING OPTION", x:"Fifteen minutes by boat: gardens, peacocks, swimming.", q:"Lokrum Island"},
+    {o:4, ll:[42.6462,18.1116], t:"Mount Srđ", w:"A SUNSET OR MORNING OPTION", x:"The cable car up, and the whole coast at once.", q:"Dubrovnik Cable Car"},
+    {d:5, ll:[42.5624,18.2627], t:"Dubrovnik airport", w:"TUE 25 · 17:05", x:"Via Munich, home by 21:55.", q:"Dubrovnik Airport"}
+  ];
+
+  var touch = window.matchMedia("(pointer:coarse)").matches;
+  var map, groups = {};
+
+  function build(){
+    map = L.map(el, {scrollWheelZoom:false, dragging:!touch, tap:false, zoomSnap:.25});
+    L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}", {
+      maxZoom:18,
+      attribution:'Tiles &copy; Esri and the GIS user community · roads &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>'
+    }).addTo(map);
+
+    Object.keys(ROUTE).forEach(function(d){
+      L.polyline(ROUTE[d], {color:"#fff", weight:7, opacity:.85}).addTo(map);
+      L.polyline(ROUTE[d], {color:DAY[d], weight:4, opacity:.95}).addTo(map);
+    });
+
+    var all = [];
+    PINS.forEach(function(p){
+      var day = p.d || p.o, c = DAY[day];
+      var html = p.d
+        ? '<div class="pin" style="background:'+c+'">'+p.d+'</div>'
+        : '<div class="pin alt" style="border-color:'+c+'"></div>';
+      var size = p.d ? 28 : 20;
+      var m = L.marker(p.ll, {
+        icon:L.divIcon({className:"", html:html, iconSize:[size,size], iconAnchor:[size/2,size/2]}),
+        title:p.t, zIndexOffset:p.d ? 100 : 0
+      }).addTo(map);
+      m.bindPopup('<b>'+p.t+'</b><span class="when">'+p.w+'</span>'+p.x+
+                  '<br><a href="'+GM+encodeURIComponent(p.q).replace(/%20/g,"+")+'" target="_blank" rel="noopener">Open in Google Maps</a>');
+      all.push(p.ll);
+    });
+
+    groups.all = L.latLngBounds(all);
+    groups.bay = L.latLngBounds([[42.395,18.64],[42.52,18.78]]);
+    groups.dbk = L.latLngBounds([[42.622,18.09],[42.655,18.13]]);
+    map.fitBounds(groups.all, {padding:[50,50]});
+  }
+
+  [].slice.call(document.querySelectorAll("[data-view]")).forEach(function(b){
+    b.addEventListener("click", function(){
+      if(!map) build();
+      map.flyToBounds(groups[b.dataset.view], {padding:[20,20], duration:.8});
+      [].slice.call(document.querySelectorAll("[data-view]")).forEach(function(x){ x.classList.toggle("solid", x === b); });
+    });
+  });
+
+  if("IntersectionObserver" in window){
+    var io = new IntersectionObserver(function(es){
+      if(es[0].isIntersecting){ io.disconnect(); if(!map) build(); }
+    }, {rootMargin:"400px"});
+    io.observe(el);
+  } else { build(); }
+});
 </script>
 </body>
 </html>
